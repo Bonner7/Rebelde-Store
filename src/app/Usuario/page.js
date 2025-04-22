@@ -1,1 +1,8 @@
-export default () => {return (<> <h1>Vamos comer!</h1> </>);}
+export default () => (
+      <>
+        <h1>Página do Desenvolvedor</h1>
+        <p>O Desenvolvedor... </p>
+      </>
+
+)
+    
