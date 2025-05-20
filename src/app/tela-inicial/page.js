@@ -1,6 +1,7 @@
 import db from "@/lib/db";
-import Whatsapp from './whatsapp.js'
 import Instagram from './instagram.js'
+import Whatsapp from './whatsapp.js'
+import Logo from './logo.js'
 
 export default async () => {
     const usuario = await db.query("SELECT * FROM usuario");
@@ -21,39 +22,13 @@ export default async () => {
                 >
                     <div 
                         style={{
-                            display: "flex", 
-                            gap: "20px", 
-                            justifyContent: "flex-start", 
-                            marginLeft: "50px", 
+                            gap: "20px",
+                            display: "flex" 
                         }}
                     >
-
                          <Instagram />
-                         
-                        <div
-                            style={{
-                                width: "43px",
-                                height: "42px",
-                                backgroundColor: "#fff",
-                                borderRadius: "50%",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <Whatsapp />
-                           
+                         <Whatsapp />
 
-                        </div>
-
-                        <div
-                            style={{
-                                width: "43px",
-                                height: "42px",
-                                backgroundColor: "#fff",
-                                borderRadius: "50%",
-                            }}
-                        />
                     </div>
                 </div>
 
@@ -61,6 +36,17 @@ export default async () => {
                     style={{
                         width: "100%",
                         height: "118px",
+                        backgroundColor: "#FFD7D7",
+                    }}
+                >
+                    <Logo />
+
+                </div>
+
+                <div
+             style={{
+                        width: "1583%",
+                        height: "296px",
                         backgroundColor: "#FFD7D7",
                     }}
                 />

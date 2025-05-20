@@ -2,22 +2,27 @@ export default function App() {
     return (
         <div
             style={{
-                position: 'relative',     // <- ESSENCIAL para usar 'absolute' dentro
+                position: 'relative',     
                 width: '43px',
-                height: '43px',         // altura do contêiner
+                height: '43px',   
+
             }}
         >
             <img
                 src="https://img.icons8.com/?size=100&id=BrU2BBoRXiWq&format=png&color=000000"
                 style={{
-                    position: 'absolute',  // <- permite posicionar manualmente
-                    top: '1px',           // <- distância do topo
-                    left: '127px',          // <- distância da esquerda
+                    backgroundColor: "#fff",
+                    borderRadius: "50%",
+                    position: 'absolute',  
+                    top: '1px',           
+                    left: '127px',         
                     width: '42px',
                     height: '42px'
                 }}
             />
+
         </div>
     );
 }
+
 
