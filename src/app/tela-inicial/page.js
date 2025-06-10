@@ -11,7 +11,7 @@ export default async () => {
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                 
                 <div
-                    style={{
+                    style={{                   //BARRA 1
                         width: "100%",
                         height: "84px",
                         backgroundColor: "#FF4791",
@@ -19,7 +19,7 @@ export default async () => {
                         alignItems: "center",
                         paddingLeft: "20px", 
                     }}
-                >
+                > 
                     <div 
                         style={{
                             gap: "20px",
@@ -32,24 +32,39 @@ export default async () => {
                     </div>
                 </div>
 
-                <div 
-                    style={{
-                        width: "100%",
-                        height: "118px",
-                        backgroundColor: "#FFD7D7",
-                    }}
-                >
-                    <Logo />
+              <div 
+    style={{                                        //BARRA 2
+        width: "100%",
+        height: "118px",
+        backgroundColor: "#FFD7D7",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between", 
+        padding: "0 20px", 
+    }}
+> 
+    <Logo />
 
-                </div>
+    <input  
+        type="text" 
+        placeholder="Pesquisar..." 
+        style={{
+            padding: "10px",
+            fontSize: "16px",
+            borderRadius: "70px",
+            border: "1px solid #ccc",
+            width: "517px"
+        }}
+    />
+</div>
 
                 <div
-             style={{
+             style={{                                   // BARRA 3
                         width: "1583%",
                         height: "296px",
                         backgroundColor: "#FFD7D7",
                     }}
-                />
+                /> 
             </div>
         </>
     );
