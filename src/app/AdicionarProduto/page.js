@@ -10,11 +10,14 @@ export default function AdicionarProduto() {
   const [categoria, setCategoria] = useState("");
   const [estoque, setEstoque] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [imagemSelecionada, setImagemSelecionada] = useState(null);
   const [imagemBase64, setImagemBase64] = useState(null);
 
   const handleImagemSelecionada = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    setImagemSelecionada(file);
 
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -49,7 +52,11 @@ export default function AdicionarProduto() {
         setCategoria("");
         setEstoque("");
         setDescricao("");
+        setImagemSelecionada(null);
         setImagemBase64(null);
+
+        window.location.href = "/GerenciamentoEstoque";
+        
       } else {
         alert('Erro ao adicionar produto');
       }
@@ -65,12 +72,14 @@ export default function AdicionarProduto() {
     setCategoria("");
     setEstoque("");
     setDescricao("");
+    setImagemSelecionada(null);
     setImagemBase64(null);
     window.location.href = "/GerenciamentoEstoque";
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px", alignItems: "center" }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+      
       {/* Barra superior */}
       <div style={{
         width: "100%",
@@ -102,20 +111,16 @@ export default function AdicionarProduto() {
         ADICIONAR PRODUTO
       </div>
 
-      {/* Container linha vertical, quadrado imagem e formulário */}
+      {/* Conteúdo principal centralizado com linha no meio */}
       <div style={{
-        marginTop: "60px",
-        width: "100%",
-        maxWidth: "1460px",
         display: "flex",
         justifyContent: "center",
-        alignItems: "flex-start",
-        gap: "300px",
-        height: "320px",
-        position: "relative"
+        alignItems: "center",
+        marginTop: "60px",
+        gap: "60px",
       }}>
-
-        {/* Quadrado da imagem */}
+        
+        {/* Quadro da Imagem */}
         <label style={{
           width: "300px",
           height: "300px",
@@ -128,12 +133,11 @@ export default function AdicionarProduto() {
           fontSize: "16px",
           color: "#666",
           overflow: "hidden",
-          position: "relative",
-          backgroundColor: imagemBase64 ? "transparent" : "transparent"
+          position: "relative"
         }}>
-          {imagemBase64 ? (
+          {imagemSelecionada ? (
             <img
-              src={imagemBase64}
+              src={URL.createObjectURL(imagemSelecionada)}
               alt="Imagem selecionada"
               style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "20px" }}
             />
@@ -148,101 +152,122 @@ export default function AdicionarProduto() {
           />
         </label>
 
-        {/* Linha vertical */}
+        {/* Linha divisória vertical */}
         <div style={{
           width: "2px",
-          height: "300px",
-          backgroundColor: "#000",
-          marginTop: "0"
+          height: "350px",
+          backgroundColor: "#000"
         }} />
 
         {/* Formulário */}
-        <form
-          onSubmit={handleSubmit}
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "15px",
-            width: "400px"
-          }}
-        >
+        <form onSubmit={handleSubmit} style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "16px",
+          width: "400px"
+        }}>
           <input
             type="text"
             placeholder="Título"
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
-            style={{ border: "1px solid #000", borderRadius: "40px", padding: "10px", fontSize: "16px" }}
+            style={{
+              height: "40px",
+              border: "1px solid #000",
+              borderRadius: "40px",
+              paddingLeft: "15px",
+              fontSize: "16px"
+            }}
             required
           />
-
           <input
             type="number"
             placeholder="Valor"
             value={valor}
             onChange={(e) => setValor(e.target.value)}
-            style={{ border: "1px solid #000", borderRadius: "40px", padding: "10px", fontSize: "16px" }}
+            style={{
+              height: "40px",
+              border: "1px solid #000",
+              borderRadius: "40px",
+              paddingLeft: "15px",
+              fontSize: "16px"
+            }}
             required
-            min="0"
-            step="0.01"
           />
-
           <input
             type="text"
             placeholder="Categoria"
             value={categoria}
             onChange={(e) => setCategoria(e.target.value)}
-            style={{ border: "1px solid #000", borderRadius: "40px", padding: "10px", fontSize: "16px" }}
+            style={{
+              height: "40px",
+              border: "1px solid #000",
+              borderRadius: "40px",
+              paddingLeft: "15px",
+              fontSize: "16px"
+            }}
             required
           />
-
           <input
             type="number"
             placeholder="Estoque"
             value={estoque}
             onChange={(e) => setEstoque(e.target.value)}
-            style={{ border: "1px solid #000", borderRadius: "40px", padding: "10px", fontSize: "16px" }}
+            style={{
+              height: "40px",
+              border: "1px solid #000",
+              borderRadius: "40px",
+              paddingLeft: "15px",
+              fontSize: "16px"
+            }}
             required
-            min="0"
           />
-
           <textarea
             placeholder="Descrição"
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
-            style={{ border: "1px solid #000", borderRadius: "40px", padding: "10px", fontSize: "16px", resize: "vertical" }}
-            rows={3}
+            style={{
+              height: "80px",
+              border: "1px solid #000",
+              borderRadius: "40px",
+              padding: "10px 15px",
+              fontSize: "16px",
+              resize: "none"
+            }}
             required
           />
 
           {/* Botões */}
-          <div style={{ display: "flex", gap: "20px", marginTop: "15px" }}>
+          <div style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "16px",
+            marginTop: "20px"
+          }}>
             <button
               type="submit"
               style={{
-                flex: 1,
-                backgroundColor: "green",
-                color: "white",
+                backgroundColor: "#28a745",
+                color: "#fff",
+                border: "none",
                 borderRadius: "40px",
-                height: "50px",
-                fontWeight: "bold",
-                fontSize: "18px",
+                padding: "10px 30px",
+                fontSize: "16px",
                 cursor: "pointer"
               }}
             >
               Salvar
             </button>
-
             <button
               type="button"
               onClick={handleCancelar}
               style={{
-                flex: 1,
-                backgroundColor: "red",
-                color: "white",
+                backgroundColor: "#dc3545",
+                color: "#fff",
+                border: "none",
                 borderRadius: "40px",
-                height: "50px",
-                fontWeight: "bold",
-                fontSize: "18px",
+                padding: "10px 30px",
+                fontSize: "16px",
                 cursor: "pointer"
               }}
             >
@@ -251,9 +276,18 @@ export default function AdicionarProduto() {
           </div>
         </form>
       </div>
+
+      {/* Link Voltar */}
+      <div style={{ marginTop: "80px" }}>
+        <a href="GerenciamentoEstoque">Voltar</a>
+      </div>
     </div>
   );
 }
+
+
+
+
 
 
 

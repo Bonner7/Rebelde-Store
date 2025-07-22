@@ -53,7 +53,9 @@ export default async function GerenciamentoEstoque() {
           paddingLeft: 10,
           paddingRight: 10
         }}>
-          <button style={buttonStyle}>ADICIONAR</button>
+<a href="/AdicionarProduto" style={{ ...buttonStyle, textDecoration: "none", display: "flex", justifyContent: "center", alignItems: "center" }}>
+  ADICIONAR
+</a>
           <button style={buttonStyle}>EXCLUIR</button>
           <button style={buttonStyle}>EDITAR</button>
         </div>

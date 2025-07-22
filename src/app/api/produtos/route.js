@@ -3,6 +3,18 @@ import fs from 'fs';
 import path from 'path';
 import db from '@/lib/db';
 
+// GET: Retorna todos os produtos
+export async function GET() {
+  try {
+    const result = await db.query("SELECT * FROM produto ORDER BY id DESC");
+    return NextResponse.json(result.rows); // <-- Isso retorna JSON corretamente
+  } catch (err) {
+    console.error("Erro no GET /api/produtos:", err);
+    return new Response("Erro ao buscar produtos", { status: 500 });
+  }
+}
+
+// POST: Adiciona um novo produto
 export async function POST(request) {
   try {
     const data = await request.json();
@@ -12,7 +24,6 @@ export async function POST(request) {
     let imagem_url = null;
 
     if (imagemBase64) {
-      // Extrai tipo e base64
       const matches = imagemBase64.match(/^data:(image\/\w+);base64,(.+)$/);
       if (!matches) {
         return new Response('Imagem inválida', { status: 400 });
@@ -23,14 +34,11 @@ export async function POST(request) {
       const fileName = `produto_${Date.now()}.${ext}`;
       const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
 
-      // Cria pasta uploads se não existir
       if (!fs.existsSync(uploadsDir)) {
         fs.mkdirSync(uploadsDir, { recursive: true });
       }
 
       const filePath = path.join(uploadsDir, fileName);
-
-      // Salva arquivo
       fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
 
       imagem_url = `/uploads/${fileName}`;
@@ -38,17 +46,13 @@ export async function POST(request) {
 
     await db.query(
       `INSERT INTO produto (titulo, valor, categoria, estoque, descricao, imagem_url)
-      VALUES ($1, $2, $3, $4, $5, $6)`,
+       VALUES ($1, $2, $3, $4, $5, $6)`,
       [titulo, parseFloat(valor), categoria, parseInt(estoque), descricao, imagem_url]
     );
 
     return new Response('Produto adicionado', { status: 201 });
   } catch (err) {
-    console.error(err);
+    console.error("Erro no POST /api/produtos:", err);
     return new Response('Erro interno', { status: 500 });
   }
 }
-
-
-
-
