@@ -8,7 +8,7 @@ export default async function GerenciamentoEstoque() {
 
   return (
     <>
-      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
 
         {/* Barra superior */}
         <div style={{
@@ -25,44 +25,45 @@ export default async function GerenciamentoEstoque() {
           </div>
         </div>
 
-        {/* Título */}
+        {/* Título centralizado */}
         <div style={{
-          width: 1100,
-          marginLeft: 135,
-          marginTop: 200,
-          textAlign: "center",
+          marginTop: 100,
           fontFamily: "Roboto, sans-serif",
           fontWeight: "bold",
           fontSize: 40,
-          color: "#000"
+          color: "#000",
+          textAlign: "center"
         }}>
           Gerenciamento de Estoque
         </div>
 
-        {/* Botões */}
+        {/* Quadrado com botões centralizado */}
         <div style={{
-          width: 1100,
-          height: 100,
+          width: 1278,
+          height: 106,
           backgroundColor: "#FF6EA8",
           borderRadius: 40,
-          marginLeft: 135,
-          marginTop: 16,
+          marginTop: 20,
           display: "flex",
           alignItems: "center",
-          justifyContent: "space-between",
-          paddingLeft: 10,
-          paddingRight: 10
+          justifyContent: "space-around",
+          padding: 10
         }}>
-<a href="/AdicionarProduto" style={{ ...buttonStyle, textDecoration: "none", display: "flex", justifyContent: "center", alignItems: "center" }}>
-  ADICIONAR
-</a>
+          <a href="/AdicionarProduto" style={{ ...buttonStyle, textDecoration: "none" }}>
+            ADICIONAR
+          </a>
+
+          
           <button style={buttonStyle}>EXCLUIR</button>
-          <button style={buttonStyle}>EDITAR</button>
+
+          <a href="/EditarProduto" style={{ ...buttonStyle, textDecoration: "none" }}>
+            EDITAR
+          </a>
         </div>
 
         {/* Cabeçalho das colunas */}
         <div style={{
-          marginLeft: 135,
+          width: 1278,
           marginTop: 40,
           display: "flex",
           flexDirection: "row",
@@ -80,10 +81,9 @@ export default async function GerenciamentoEstoque() {
 
         {/* Linha abaixo do cabeçalho */}
         <div style={{
-          width: 1200,
+          width: 1278,
           height: 2,
           backgroundColor: "#000",
-          marginLeft: 80,
           marginTop: 10
         }} />
 
@@ -92,11 +92,11 @@ export default async function GerenciamentoEstoque() {
           <div
             key={produto.id}
             style={{
-              marginLeft: 135,
               marginTop: 30,
               display: "flex",
               flexDirection: "row",
-              alignItems: "center"
+              alignItems: "center",
+              width: 1278
             }}
           >
             {/* Produto (imagem + nome) */}
@@ -135,8 +135,8 @@ export default async function GerenciamentoEstoque() {
         ))}
 
         {/* Link voltar */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 200, marginTop: 100 }}>
-          <a href="tela-inicial"> Voltar </a>
+        <div style={{ marginTop: 100 }}>
+          <a href="tela-inicial" style={{ fontSize: 20 }}>Voltar</a>
         </div>
       </div>
     </>
@@ -154,4 +154,8 @@ const buttonStyle = {
   fontWeight: "bold",
   fontSize: 32,
   color: "#000",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
 };
+

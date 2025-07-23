@@ -5,6 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Instagram from './instagram.js';
 import Whatsapp from './whatsapp.js';
 
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
+
 export default function EditarProduto1() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -17,6 +20,7 @@ export default function EditarProduto1() {
   const [descricao, setDescricao] = useState("");
   const [imagemBase64, setImagemBase64] = useState(null);
   const [imagemSelecionada, setImagemSelecionada] = useState(null);
+  const [mostrarAlerta, setMostrarAlerta] = useState(false);
 
   useEffect(() => {
     async function carregarProduto() {
@@ -70,8 +74,11 @@ export default function EditarProduto1() {
       });
 
       if (response.ok) {
-        alert("Produto atualizado com sucesso!");
-        router.push("/GerenciamentoEstoque");
+        setMostrarAlerta(true);
+        setTimeout(() => {
+          setMostrarAlerta(false);
+          router.push("/GerenciamentoEstoque");
+        }, 3000);
       } else {
         alert("Erro ao atualizar produto");
       }
@@ -82,8 +89,8 @@ export default function EditarProduto1() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
+
       {/* Barra superior */}
       <div style={{
         width: "100%",
@@ -123,7 +130,7 @@ export default function EditarProduto1() {
         marginTop: "60px",
         gap: "60px",
       }}>
-        
+
         {/* Imagem */}
         <label style={{
           width: "300px",
@@ -184,6 +191,24 @@ export default function EditarProduto1() {
           </div>
         </form>
       </div>
+
+      {/* ALERTA DE SUCESSO */}
+      {mostrarAlerta && (
+        <div style={{
+          position: "absolute",
+          top: 131,
+          left: 1247,
+          width: 344,
+          height: 114,
+          zIndex: 9999
+        }}>
+          <Alert severity="success" sx={{ height: "100%" }}>
+            <AlertTitle>Sucesso</AlertTitle>
+            Produto atualizado com sucesso!
+          </Alert>
+        </div>
+      )}
+
     </div>
   );
 }
