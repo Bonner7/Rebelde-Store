@@ -1,17 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Instagram from './instagram.js';
 import Whatsapp from './whatsapp.js';
 
 export default function AdicionarProduto() {
   const [titulo, setTitulo] = useState("");
   const [valor, setValor] = useState("");
-  const [categoria, setCategoria] = useState("");
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState("");
+  const [novaCategoria, setNovaCategoria] = useState("");
+  const [categorias, setCategorias] = useState([]);
   const [estoque, setEstoque] = useState("");
   const [descricao, setDescricao] = useState("");
   const [imagemSelecionada, setImagemSelecionada] = useState(null);
   const [imagemBase64, setImagemBase64] = useState(null);
+
+  useEffect(() => {
+    // Buscar categorias existentes
+    const buscarCategorias = async () => {
+      const res = await fetch("/api/categorias");
+      const data = await res.json();
+      setCategorias(data);
+    };
+    buscarCategorias();
+  }, []);
 
   const handleImagemSelecionada = (e) => {
     const file = e.target.files[0];
@@ -29,10 +41,17 @@ export default function AdicionarProduto() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const categoriaFinal = novaCategoria.trim() || categoriaSelecionada;
+
+    if (!categoriaFinal) {
+      alert("Por favor, selecione ou adicione uma categoria.");
+      return;
+    }
+
     const produto = {
       titulo,
       valor,
-      categoria,
+      categoria: categoriaFinal,
       estoque,
       descricao,
       imagemBase64
@@ -49,14 +68,13 @@ export default function AdicionarProduto() {
         alert('Produto adicionado com sucesso!');
         setTitulo("");
         setValor("");
-        setCategoria("");
+        setCategoriaSelecionada("");
+        setNovaCategoria("");
         setEstoque("");
         setDescricao("");
         setImagemSelecionada(null);
         setImagemBase64(null);
-
         window.location.href = "/GerenciamentoEstoque";
-        
       } else {
         alert('Erro ao adicionar produto');
       }
@@ -67,19 +85,12 @@ export default function AdicionarProduto() {
   };
 
   const handleCancelar = () => {
-    setTitulo("");
-    setValor("");
-    setCategoria("");
-    setEstoque("");
-    setDescricao("");
-    setImagemSelecionada(null);
-    setImagemBase64(null);
     window.location.href = "/GerenciamentoEstoque";
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      
+
       {/* Barra superior */}
       <div style={{
         width: "100%",
@@ -95,7 +106,7 @@ export default function AdicionarProduto() {
         </div>
       </div>
 
-      {/* Título centralizado */}
+      {/* Título */}
       <div style={{
         width: "758px",
         height: "80px",
@@ -111,7 +122,7 @@ export default function AdicionarProduto() {
         ADICIONAR PRODUTO
       </div>
 
-      {/* Conteúdo principal centralizado com linha no meio */}
+      {/* Corpo da página */}
       <div style={{
         display: "flex",
         justifyContent: "center",
@@ -119,8 +130,7 @@ export default function AdicionarProduto() {
         marginTop: "60px",
         gap: "60px",
       }}>
-        
-        {/* Quadro da Imagem */}
+        {/* Imagem */}
         <label style={{
           width: "300px",
           height: "300px",
@@ -152,12 +162,8 @@ export default function AdicionarProduto() {
           />
         </label>
 
-        {/* Linha divisória vertical */}
-        <div style={{
-          width: "2px",
-          height: "350px",
-          backgroundColor: "#000"
-        }} />
+        {/* Linha divisória */}
+        <div style={{ width: "2px", height: "350px", backgroundColor: "#000" }} />
 
         {/* Formulário */}
         <form onSubmit={handleSubmit} style={{
@@ -171,126 +177,110 @@ export default function AdicionarProduto() {
             placeholder="Título"
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
-            style={{
-              height: "40px",
-              border: "1px solid #000",
-              borderRadius: "40px",
-              paddingLeft: "15px",
-              fontSize: "16px"
-            }}
             required
+            style={estiloInput}
           />
+
           <input
             type="number"
             placeholder="Valor"
             value={valor}
             onChange={(e) => setValor(e.target.value)}
-            style={{
-              height: "40px",
-              border: "1px solid #000",
-              borderRadius: "40px",
-              paddingLeft: "15px",
-              fontSize: "16px"
-            }}
             required
+            style={estiloInput}
           />
-          <input
-            type="text"
-            placeholder="Categoria"
-            value={categoria}
-            onChange={(e) => setCategoria(e.target.value)}
-            style={{
-              height: "40px",
-              border: "1px solid #000",
-              borderRadius: "40px",
-              paddingLeft: "15px",
-              fontSize: "16px"
-            }}
-            required
-          />
+
+          {/* Categoria */}
+          <select
+            value={categoriaSelecionada}
+            onChange={(e) => setCategoriaSelecionada(e.target.value)}
+            style={estiloInput}
+            required={!novaCategoria}
+          >
+            <option value="">Selecione uma categoria</option>
+            {categorias.map(cat => (
+              <option key={cat.id || cat.nome} value={cat.nome}>{cat.nome}</option>
+            ))}
+            <option value="nova">➕ Adicionar nova categoria...</option>
+          </select>
+
+          {/* Campo para nova categoria */}
+          {categoriaSelecionada === "nova" && (
+            <input
+              type="text"
+              placeholder="Digite a nova categoria"
+              value={novaCategoria}
+              onChange={(e) => setNovaCategoria(e.target.value)}
+              required
+              style={estiloInput}
+            />
+          )}
+
           <input
             type="number"
             placeholder="Estoque"
             value={estoque}
             onChange={(e) => setEstoque(e.target.value)}
-            style={{
-              height: "40px",
-              border: "1px solid #000",
-              borderRadius: "40px",
-              paddingLeft: "15px",
-              fontSize: "16px"
-            }}
             required
+            style={estiloInput}
           />
+
           <textarea
             placeholder="Descrição"
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
-            style={{
-              height: "80px",
-              border: "1px solid #000",
-              borderRadius: "40px",
-              padding: "10px 15px",
-              fontSize: "16px",
-              resize: "none"
-            }}
             required
+            style={estiloTextArea}
           />
 
           {/* Botões */}
-          <div style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: "16px",
-            marginTop: "20px"
-          }}>
-            <button
-              type="submit"
-              style={{
-                backgroundColor: "#28a745",
-                color: "#fff",
-                border: "none",
-                borderRadius: "40px",
-                padding: "10px 30px",
-                fontSize: "16px",
-                cursor: "pointer"
-              }}
-            >
-              Salvar
-            </button>
-            <button
-              type="button"
-              onClick={handleCancelar}
-              style={{
-                backgroundColor: "#dc3545",
-                color: "#fff",
-                border: "none",
-                borderRadius: "40px",
-                padding: "10px 30px",
-                fontSize: "16px",
-                cursor: "pointer"
-              }}
-            >
-              Cancelar
-            </button>
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: "16px", marginTop: "20px" }}>
+            <button type="submit" style={botaoVerde}>Salvar</button>
+            <button type="button" onClick={handleCancelar} style={botaoVermelho}>Cancelar</button>
           </div>
         </form>
       </div>
 
-      {/* Link Voltar */}
       <div style={{ marginTop: "80px" }}>
-        <a href="GerenciamentoEstoque">Voltar</a>
+        <a href="/GerenciamentoEstoque">Voltar</a>
       </div>
     </div>
   );
 }
 
+const estiloInput = {
+  height: "40px",
+  border: "1px solid #000",
+  borderRadius: "40px",
+  paddingLeft: "15px",
+  fontSize: "16px"
+};
 
+const estiloTextArea = {
+  height: "80px",
+  border: "1px solid #000",
+  borderRadius: "40px",
+  padding: "10px 15px",
+  fontSize: "16px",
+  resize: "none"
+};
 
+const botaoVerde = {
+  backgroundColor: "#28a745",
+  color: "#fff",
+  border: "none",
+  borderRadius: "40px",
+  padding: "10px 30px",
+  fontSize: "16px",
+  cursor: "pointer"
+};
 
-
-
-
-
-
-
+const botaoVermelho = {
+  backgroundColor: "#dc3545",
+  color: "#fff",
+  border: "none",
+  borderRadius: "40px",
+  padding: "10px 30px",
+  fontSize: "16px",
+  cursor: "pointer"
+};

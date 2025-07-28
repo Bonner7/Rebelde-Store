@@ -1,13 +1,16 @@
 import db from "@/lib/db";
 
-export async function GET(req, { params }) {
-  const id = parseInt(params.id);
-  if (isNaN(id)) {
+// GET produto por ID
+export async function GET(req, context) {
+  const { id } = await context.params;
+
+  const produtoId = parseInt(id);
+  if (isNaN(produtoId)) {
     return new Response("ID inválido", { status: 400 });
   }
 
   try {
-    const result = await db.query("SELECT * FROM produto WHERE id = $1", [id]);
+    const result = await db.query("SELECT * FROM produto WHERE id = $1", [produtoId]);
     if (result.rows.length === 0) {
       return new Response("Produto não encontrado", { status: 404 });
     }
@@ -18,9 +21,12 @@ export async function GET(req, { params }) {
   }
 }
 
-export async function PUT(req, { params }) {
-  const id = parseInt(params.id);
-  if (isNaN(id)) {
+// PUT (atualizar produto)
+export async function PUT(req, context) {
+  const { id } = await context.params;
+
+  const produtoId = parseInt(id);
+  if (isNaN(produtoId)) {
     return new Response("ID inválido", { status: 400 });
   }
 
@@ -37,7 +43,7 @@ export async function PUT(req, { params }) {
            descricao = $5,
            imagem_url = $6
        WHERE id = $7`,
-      [titulo, valor, categoria, estoque, descricao, imagemBase64, id]
+      [titulo, valor, categoria, estoque, descricao, imagemBase64, produtoId]
     );
 
     return new Response("Produto atualizado com sucesso", { status: 200 });
@@ -47,14 +53,17 @@ export async function PUT(req, { params }) {
   }
 }
 
-export async function DELETE(req, { params }) {
-  const id = parseInt(params.id);
-  if (isNaN(id)) {
+// DELETE (excluir produto)
+export async function DELETE(req, context) {
+  const { id } = await context.params;
+
+  const produtoId = parseInt(id);
+  if (isNaN(produtoId)) {
     return new Response("ID inválido", { status: 400 });
   }
 
   try {
-    await db.query("DELETE FROM produto WHERE id = $1", [id]);
+    await db.query("DELETE FROM produto WHERE id = $1", [produtoId]);
     return new Response("Produto excluído com sucesso", { status: 200 });
   } catch (error) {
     console.error("Erro no DELETE:", error);

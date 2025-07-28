@@ -22,6 +22,24 @@ export default function EditarProduto1() {
   const [imagemSelecionada, setImagemSelecionada] = useState(null);
   const [mostrarAlerta, setMostrarAlerta] = useState(false);
 
+  const [categorias, setCategorias] = useState([]);
+
+  // Buscar categorias cadastradas do backend
+  useEffect(() => {
+    async function carregarCategorias() {
+      try {
+        const res = await fetch('/api/categorias');
+        if (!res.ok) throw new Error("Erro ao buscar categorias");
+        const data = await res.json();
+        setCategorias(data); // espera array de categorias [{id, nome}, ...]
+      } catch (error) {
+        console.error("Erro ao carregar categorias:", error);
+      }
+    }
+    carregarCategorias();
+  }, []);
+
+  // Carregar produto para editar
   useEffect(() => {
     async function carregarProduto() {
       try {
@@ -175,7 +193,22 @@ export default function EditarProduto1() {
         }}>
           <input type="text" placeholder="Título" value={titulo} onChange={(e) => setTitulo(e.target.value)} style={inputEstilo} required />
           <input type="number" placeholder="Valor" value={valor} onChange={(e) => setValor(e.target.value)} style={inputEstilo} required />
-          <input type="text" placeholder="Categoria" value={categoria} onChange={(e) => setCategoria(e.target.value)} style={inputEstilo} required />
+
+          {/* Categoria - select dinâmico */}
+          <select
+            value={categoria}
+            onChange={(e) => setCategoria(e.target.value)}
+            style={inputEstilo}
+            required
+          >
+            <option value="">Selecione uma categoria</option>
+            {categorias.map(cat => (
+              <option key={cat.id} value={cat.nome}>
+                {cat.nome}
+              </option>
+            ))}
+          </select>
+
           <input type="number" placeholder="Estoque" value={estoque} onChange={(e) => setEstoque(e.target.value)} style={inputEstilo} required />
           <textarea placeholder="Descrição" value={descricao} onChange={(e) => setDescricao(e.target.value)} style={textareaEstilo} required />
 

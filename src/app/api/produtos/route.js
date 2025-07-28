@@ -1,13 +1,26 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server'; 
 import fs from 'fs';
 import path from 'path';
 import db from '@/lib/db';
 
-// GET: Retorna todos os produtos
-export async function GET() {
+// GET: Lista todos os produtos ou filtra por categoria
+export async function GET(request) {
   try {
-    const result = await db.query("SELECT * FROM produto ORDER BY id DESC");
-    return NextResponse.json(result.rows); // <-- Isso retorna JSON corretamente
+    const { searchParams } = new URL(request.url);
+    const categoria = searchParams.get("categoria");
+
+    let query = "SELECT * FROM produto";
+    const params = [];
+
+    if (categoria) {
+      query += " WHERE categoria = $1";
+      params.push(categoria);
+    }
+
+    query += " ORDER BY id DESC";
+
+    const result = await db.query(query, params);
+    return NextResponse.json(result.rows);
   } catch (err) {
     console.error("Erro no GET /api/produtos:", err);
     return new Response("Erro ao buscar produtos", { status: 500 });
@@ -18,7 +31,6 @@ export async function GET() {
 export async function POST(request) {
   try {
     const data = await request.json();
-
     const { titulo, valor, categoria, estoque, descricao, imagemBase64 } = data;
 
     let imagem_url = null;
@@ -28,9 +40,9 @@ export async function POST(request) {
       if (!matches) {
         return new Response('Imagem inválida', { status: 400 });
       }
+
       const ext = matches[1].split('/')[1];
       const base64Data = matches[2];
-
       const fileName = `produto_${Date.now()}.${ext}`;
       const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
 

@@ -53,9 +53,10 @@ export default async function GerenciamentoEstoque() {
             ADICIONAR
           </a>
 
+           <a href="/ExcluirProduto" style={{ ...buttonStyle, textDecoration: "none" }}>
+            EXCLUIR
+          </a>
           
-          <button style={buttonStyle}>EXCLUIR</button>
-
           <a href="/EditarProduto" style={{ ...buttonStyle, textDecoration: "none" }}>
             EDITAR
           </a>
