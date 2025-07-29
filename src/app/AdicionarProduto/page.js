@@ -39,15 +39,30 @@ export default function AdicionarProduto() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const categoriaFinal = novaCategoria.trim() || categoriaSelecionada;
+  const categoriaFinal = novaCategoria.trim() || categoriaSelecionada;
 
-    if (!categoriaFinal) {
-      alert("Por favor, selecione ou adicione uma categoria.");
-      return;
+  if (!categoriaFinal) {
+    alert("Por favor, selecione ou adicione uma categoria.");
+    return;
+  }
+
+  try {
+    // 🔥 SALVAR NOVA CATEGORIA, SE INFORMADA
+    if (novaCategoria.trim()) {
+      const resCategoria = await fetch('/api/categorias', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nome: novaCategoria.trim() })
+      });
+
+      if (!resCategoria.ok) {
+        throw new Error("Erro ao salvar nova categoria.");
+      }
     }
 
+    // 🔥 SALVAR PRODUTO
     const produto = {
       titulo,
       valor,
@@ -57,32 +72,32 @@ export default function AdicionarProduto() {
       imagemBase64
     };
 
-    try {
-      const response = await fetch('/api/produtos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(produto),
-      });
+    const response = await fetch('/api/produtos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(produto),
+    });
 
-      if (response.ok) {
-        alert('Produto adicionado com sucesso!');
-        setTitulo("");
-        setValor("");
-        setCategoriaSelecionada("");
-        setNovaCategoria("");
-        setEstoque("");
-        setDescricao("");
-        setImagemSelecionada(null);
-        setImagemBase64(null);
-        window.location.href = "/GerenciamentoEstoque";
-      } else {
-        alert('Erro ao adicionar produto');
-      }
-    } catch (error) {
-      console.error(error);
-      alert('Erro no envio');
+    if (response.ok) {
+      alert('Produto adicionado com sucesso!');
+      setTitulo("");
+      setValor("");
+      setCategoriaSelecionada("");
+      setNovaCategoria("");
+      setEstoque("");
+      setDescricao("");
+      setImagemSelecionada(null);
+      setImagemBase64(null);
+      window.location.href = "/GerenciamentoEstoque";
+    } else {
+      alert('Erro ao adicionar produto');
     }
-  };
+  } catch (error) {
+    console.error(error);
+    alert('Erro no envio');
+  }
+};
+
 
   const handleCancelar = () => {
     window.location.href = "/GerenciamentoEstoque";

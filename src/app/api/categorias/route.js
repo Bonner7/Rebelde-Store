@@ -13,10 +13,15 @@ export async function GET() {
 export async function POST(req) {
   try {
     const body = await req.json();
-    const nome = body.nome;
+    const nome = body.nome?.trim();
 
-    if (!nome || nome.trim() === "") {
+    if (!nome) {
       return new Response("Nome da categoria é obrigatório", { status: 400 });
+    }
+
+    const existente = await db.query("SELECT * FROM categoria WHERE nome = $1", [nome]);
+    if (existente.rows.length > 0) {
+      return Response.json(existente.rows[0]);
     }
 
     const insert = await db.query(
@@ -30,3 +35,4 @@ export async function POST(req) {
     return new Response("Erro interno do servidor", { status: 500 });
   }
 }
+

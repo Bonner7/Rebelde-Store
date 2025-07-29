@@ -195,19 +195,21 @@ export default function EditarProduto1() {
           <input type="number" placeholder="Valor" value={valor} onChange={(e) => setValor(e.target.value)} style={inputEstilo} required />
 
           {/* Categoria - select dinâmico */}
-          <select
-            value={categoria}
-            onChange={(e) => setCategoria(e.target.value)}
-            style={inputEstilo}
-            required
-          >
-            <option value="">Selecione uma categoria</option>
-            {categorias.map(cat => (
-              <option key={cat.id} value={cat.nome}>
-                {cat.nome}
-              </option>
-            ))}
-          </select>
+          
+        <select
+  value={categoria}
+  onChange={(e) => setCategoria(e.target.value)}
+  style={inputEstilo}
+  required
+>
+  <option value="">Selecione uma categoria</option>
+  {categorias.map(cat => (
+    <option key={cat.id} value={cat.id}>
+      {cat.nome}
+    </option>
+  ))}
+</select>
+
 
           <input type="number" placeholder="Estoque" value={estoque} onChange={(e) => setEstoque(e.target.value)} style={inputEstilo} required />
           <textarea placeholder="Descrição" value={descricao} onChange={(e) => setDescricao(e.target.value)} style={textareaEstilo} required />

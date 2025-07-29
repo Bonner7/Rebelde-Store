@@ -35,16 +35,17 @@ export async function PUT(req, context) {
     const { titulo, valor, categoria, estoque, descricao, imagemBase64 } = dados;
 
     await db.query(
-      `UPDATE produto
-       SET titulo = $1,
-           valor = $2,
-           categoria = $3,
-           estoque = $4,
-           descricao = $5,
-           imagem_url = $6
-       WHERE id = $7`,
-      [titulo, valor, categoria, estoque, descricao, imagemBase64, produtoId]
-    );
+  `UPDATE produto
+   SET titulo = $1,
+       valor = $2,
+       categoria_id = $3,
+       estoque = $4,
+       descricao = $5,
+       imagem_url = $6
+   WHERE id = $7`,
+  [titulo, valor, categoria, estoque, descricao, imagemBase64, produtoId]
+);
+
 
     return new Response("Produto atualizado com sucesso", { status: 200 });
   } catch (error) {
