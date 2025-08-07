@@ -11,21 +11,21 @@ export default function CategoriaProdutos() {
   const [produtos, setProdutos] = useState([]);
 
   useEffect(() => {
-    async function fetchProdutos() {
-      try {
-        const res = await fetch("/api/produtos");
-        const todos = await res.json();
-        const filtrados = todos.filter(
-          (produto) => produto.categoria?.toLowerCase() === nome.toLowerCase()
-        );
-        setProdutos(filtrados);
-      } catch (error) {
-        console.error("Erro ao buscar produtos:", error);
-      }
+  async function fetchProdutos() {
+    try {
+      const res = await fetch(`/api/produtos/categoria/${encodeURIComponent(nome)}`);
+      if (!res.ok) throw new Error("Erro ao buscar produtos por categoria");
+      const dados = await res.json();
+      setProdutos(dados);
+    } catch (error) {
+      console.error("Erro ao buscar produtos:", error);
+      setProdutos([]); // Limpa a lista em caso de erro
     }
+  }
 
-    fetchProdutos();
-  }, [nome]);
+  fetchProdutos();
+}, [nome]);
+
 
   return (
     <div>

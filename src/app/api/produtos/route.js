@@ -1,28 +1,20 @@
-import { NextResponse } from 'next/server'; 
+import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import db from '@/lib/db';
 
-// GET: Lista todos os produtos ou filtra por categoria
-export async function GET(request) {
+// GET: lista todos os produtos com nome da categoria
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const categoria = searchParams.get("categoria");
-
-    let query = "SELECT * FROM produto";
-    const params = [];
-
-    if (categoria) {
-      query += " WHERE categoria = $1";
-      params.push(categoria);
-    }
-
-    query += " ORDER BY id DESC";
-
-    const result = await db.query(query, params);
+    const result = await db.query(`
+      SELECT p.*, c.nome AS categoria_nome
+      FROM produto p
+      LEFT JOIN categoria c ON p.categoria_id = c.id
+      ORDER BY p.id DESC
+    `);
     return NextResponse.json(result.rows);
-  } catch (err) {
-    console.error("Erro no GET /api/produtos:", err);
+  } catch (error) {
+    console.error("Erro ao buscar produtos:", error);
     return new Response("Erro ao buscar produtos", { status: 500 });
   }
 }
@@ -32,6 +24,13 @@ export async function POST(request) {
   try {
     const data = await request.json();
     const { titulo, valor, categoria, estoque, descricao, imagemBase64 } = data;
+
+    // Buscar id da categoria pelo nome
+    const catResult = await db.query("SELECT id FROM categoria WHERE nome = $1", [categoria]);
+    if (catResult.rows.length === 0) {
+      return new Response("Categoria não encontrada", { status: 400 });
+    }
+    const categoria_id = catResult.rows[0].id;
 
     let imagem_url = null;
 
@@ -56,10 +55,11 @@ export async function POST(request) {
       imagem_url = `/uploads/${fileName}`;
     }
 
+    // Inserir produto com categoria_id
     await db.query(
-      `INSERT INTO produto (titulo, valor, categoria, estoque, descricao, imagem_url)
+      `INSERT INTO produto (titulo, valor, categoria_id, estoque, descricao, imagem_url)
        VALUES ($1, $2, $3, $4, $5, $6)`,
-      [titulo, parseFloat(valor), categoria, parseInt(estoque), descricao, imagem_url]
+      [titulo, parseFloat(valor), categoria_id, parseInt(estoque), descricao, imagem_url]
     );
 
     return new Response('Produto adicionado', { status: 201 });

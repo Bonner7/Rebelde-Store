@@ -1,39 +1,26 @@
 import db from "@/lib/db";
 
-// GET: buscar todas as categorias
-export async function GET() {
+export async function GET(req, context) {
+  const { nome } = await context.params; // ✅ agora é assíncrono
+
+  console.log("Categoria recebida na URL:", nome);
+
   try {
-    const result = await db.query("SELECT * FROM categoria ORDER BY nome");
-    return Response.json(result.rows);
-  } catch (err) {
-    console.error("Erro ao buscar categorias:", err);
-    return new Response("Erro interno do servidor", { status: 500 });
-  }
-}
-
-// POST: criar nova categoria
-export async function POST(req) {
-  try {
-    const body = await req.json();
-    const nome = body.nome?.trim();
-
-    if (!nome) {
-      return new Response("Nome da categoria é obrigatório", { status: 400 });
-    }
-
-    const existente = await db.query("SELECT * FROM categoria WHERE nome = $1", [nome]);
-    if (existente.rows.length > 0) {
-      return Response.json(existente.rows[0]); // categoria já existe
-    }
-
-    const insert = await db.query(
-      "INSERT INTO categoria (nome) VALUES ($1) RETURNING *",
+    const result = await db.query(
+      `
+      SELECT produto.*
+      FROM produto
+      INNER JOIN categoria ON produto.categoria_id = categoria.id
+      WHERE LOWER(categoria.nome) = LOWER($1)
+      `,
       [nome]
     );
 
-    return Response.json(insert.rows[0]); // categoria nova criada
-  } catch (err) {
-    console.error("Erro ao adicionar categoria:", err);
-    return new Response("Erro interno do servidor", { status: 500 });
+    console.log("Resultado da consulta:", result.rows);
+
+    return Response.json(result.rows);
+  } catch (error) {
+    console.error("Erro ao buscar produtos por categoria:", error);
+    return new Response("Erro ao buscar produtos por categoria", { status: 500 });
   }
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Instagram from './instagram.js';
-import Whatsapp from './whatsapp.js';
+import Instagram from "./instagram";
+import Whatsapp from "./whatsapp";
 
 export default function ExcluirProduto() {
   const [produtos, setProdutos] = useState([]);
@@ -16,10 +16,14 @@ export default function ExcluirProduto() {
     async function fetchProdutos() {
       try {
         const res = await fetch("/api/produtos");
+        if (!res.ok) {
+          throw new Error("Erro ao buscar produtos");
+        }
         const data = await res.json();
         setProdutos(data);
       } catch (err) {
         console.error("Erro ao buscar produtos:", err);
+        setProdutos([]);
       }
     }
     fetchProdutos();
@@ -45,7 +49,8 @@ export default function ExcluirProduto() {
         setProdutos(prev => prev.filter(p => p.id !== id));
         alert("Produto excluído com sucesso!");
       } else {
-        alert("Erro ao excluir produto.");
+        const errorData = await res.json();
+        alert(`Erro ao excluir produto: ${errorData?.error || "Erro desconhecido"}`);
       }
     } catch (err) {
       console.error("Erro:", err);
@@ -56,14 +61,16 @@ export default function ExcluirProduto() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20, alignItems: "center" }}>
       {/* Barra superior */}
-      <div style={{
-        width: "100%",
-        height: 84,
-        backgroundColor: "#FF4791",
-        display: "flex",
-        alignItems: "center",
-        paddingLeft: 20
-      }}>
+      <div
+        style={{
+          width: "100%",
+          height: 84,
+          backgroundColor: "#FF4791",
+          display: "flex",
+          alignItems: "center",
+          paddingLeft: 20,
+        }}
+      >
         <div style={{ gap: 20, display: "flex" }}>
           <Instagram />
           <Whatsapp />
@@ -71,40 +78,44 @@ export default function ExcluirProduto() {
       </div>
 
       {/* Título */}
-      <div style={{
-        width: 1100,
-        marginTop: 40,
-        textAlign: "center",
-        fontFamily: "Roboto, sans-serif",
-        fontWeight: "bold",
-        fontSize: 40,
-        color: "#000"
-      }}>
+      <div
+        style={{
+          width: 1100,
+          marginTop: 40,
+          textAlign: "center",
+          fontFamily: "Roboto, sans-serif",
+          fontWeight: "bold",
+          fontSize: 40,
+          color: "#000",
+        }}
+      >
         EXCLUIR PRODUTO
       </div>
 
       {/* Quadro com barra de pesquisa + categoria */}
-      <div style={{
-        width: 750,
-        height: 100,
-        backgroundColor: "#FF6EA8",
-        borderRadius: 40,
-        marginTop: 16,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: 40,
-        paddingLeft: 10,
-        paddingRight: 10,
-        boxSizing: "border-box",
-        position: "relative"
-      }}>
+      <div
+        style={{
+          width: 750,
+          height: 100,
+          backgroundColor: "#FF6EA8",
+          borderRadius: 40,
+          marginTop: 16,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 40,
+          paddingLeft: 10,
+          paddingRight: 10,
+          boxSizing: "border-box",
+          position: "relative",
+        }}
+      >
         {/* Input busca */}
         <input
           type="text"
           placeholder="Buscar produto"
           value={busca}
-          onChange={e => setBusca(e.target.value)}
+          onChange={(e) => setBusca(e.target.value)}
           style={{
             width: 320,
             height: 56,
@@ -112,7 +123,7 @@ export default function ExcluirProduto() {
             border: "1px solid #000",
             paddingLeft: 20,
             fontSize: 18,
-            boxSizing: "border-box"
+            boxSizing: "border-box",
           }}
         />
 
@@ -128,27 +139,29 @@ export default function ExcluirProduto() {
               fontSize: 18,
               cursor: "pointer",
               border: "1px solid #000",
-              boxSizing: "border-box"
+              boxSizing: "border-box",
             }}
           >
             {categoriaSelecionada || "Categoria"}
           </button>
 
           {categoriaAberta && (
-            <div style={{
-              position: "absolute",
-              top: 66,
-              left: 0,
-              width: 320,
-              backgroundColor: "#fff",
-              border: "1px solid #ccc",
-              borderRadius: 10,
-              zIndex: 1000,
-              maxHeight: 160,
-              overflowY: "auto",
-              fontSize: 16
-            }}>
-              {categorias.map(cat => (
+            <div
+              style={{
+                position: "absolute",
+                top: 66,
+                left: 0,
+                width: 320,
+                backgroundColor: "#fff",
+                border: "1px solid #ccc",
+                borderRadius: 10,
+                zIndex: 1000,
+                maxHeight: 160,
+                overflowY: "auto",
+                fontSize: 16,
+              }}
+            >
+              {categorias.map((cat) => (
                 <div
                   key={cat}
                   onClick={() => {
@@ -176,10 +189,10 @@ export default function ExcluirProduto() {
                   cursor: "pointer",
                   color: "red",
                   fontWeight: "bold",
-                  borderTop: "1px solid #eee"
+                  borderTop: "1px solid #eee",
                 }}
               >
-                Limpar filtro kk
+                Limpar filtro
               </div>
             </div>
           )}
@@ -187,46 +200,52 @@ export default function ExcluirProduto() {
       </div>
 
       {/* Cabeçalho das colunas */}
-      <div style={{
-        marginTop: 40,
-        marginLeft: 135,
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        fontFamily: "Roboto, sans-serif",
-        fontWeight: "bold",
-        fontSize: 24,
-        color: "#000",
-        width: 1250
-      }}>
+      <div
+        style={{
+          marginTop: 40,
+          marginLeft: 135,
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          fontFamily: "Roboto, sans-serif",
+          fontWeight: "bold",
+          fontSize: 24,
+          color: "#000",
+          width: 1250,
+        }}
+      >
         <div style={{ width: 300 }}>Produto</div>
         <div style={{ width: 200, marginLeft: 90 }}>Categoria</div>
         <div style={{ width: 100, marginLeft: 100 }}>Quantidade</div>
         <div style={{ marginLeft: 100 }}>Valor</div>
       </div>
 
-      <div style={{
-        width: 1300,
-        height: 2,
-        backgroundColor: "#000",
-        marginLeft: 50,
-        marginTop: 10
-      }} />
+      <div
+        style={{
+          width: 1300,
+          height: 2,
+          backgroundColor: "#000",
+          marginLeft: 50,
+          marginTop: 10,
+        }}
+      />
 
       {/* Lista de produtos */}
       {produtosFiltrados.length === 0 ? (
-        <div style={{
-          width: 1200,
-          marginLeft: 135,
-          marginTop: 30,
-          fontFamily: "Roboto, sans-serif",
-          fontSize: 24,
-          color: "#000"
-        }}>
+        <div
+          style={{
+            width: 1200,
+            marginLeft: 135,
+            marginTop: 30,
+            fontFamily: "Roboto, sans-serif",
+            fontSize: 24,
+            color: "#000",
+          }}
+        >
           Nenhum produto encontrado.
         </div>
       ) : (
-        produtosFiltrados.map(produto => (
+        produtosFiltrados.map((produto) => (
           <div
             key={produto.id}
             style={{
@@ -235,10 +254,17 @@ export default function ExcluirProduto() {
               display: "flex",
               flexDirection: "row",
               alignItems: "center",
-              width: 1300
+              width: 1300,
             }}
           >
-            <div style={{ display: "flex", flexDirection: "row", alignItems: "center", width: 300 }}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                width: 300,
+              }}
+            >
               <img
                 src={produto.imagem_url}
                 alt={produto.titulo}
@@ -247,7 +273,7 @@ export default function ExcluirProduto() {
                   height: 60,
                   objectFit: "cover",
                   marginRight: 10,
-                  borderRadius: 10
+                  borderRadius: 10,
                 }}
               />
               <div style={{ fontFamily: "Roboto, sans-serif", fontSize: 24 }}>
@@ -255,25 +281,47 @@ export default function ExcluirProduto() {
               </div>
             </div>
 
-            <div style={{ marginLeft: 90, width: 200, fontFamily: "Roboto, sans-serif", fontSize: 24 }}>
+            <div
+              style={{
+                marginLeft: 90,
+                width: 200,
+                fontFamily: "Roboto, sans-serif",
+                fontSize: 24,
+              }}
+            >
               {produto.categoria}
             </div>
 
-            <div style={{ marginLeft: 100, width: 100, fontFamily: "Roboto, sans-serif", fontSize: 24 }}>
+            <div
+              style={{
+                marginLeft: 100,
+                width: 100,
+                fontFamily: "Roboto, sans-serif",
+                fontSize: 24,
+              }}
+            >
               {produto.estoque}
             </div>
 
-            <div style={{ marginLeft: 100, fontFamily: "Roboto, sans-serif", fontSize: 24 }}>
+            <div
+              style={{
+                marginLeft: 100,
+                fontFamily: "Roboto, sans-serif",
+                fontSize: 24,
+              }}
+            >
               R$ {Number(produto.valor).toFixed(2)}
             </div>
 
             {/* Botão de exclusão */}
-            <div style={{
-              marginLeft: 40,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-            }}>
+            <div
+              style={{
+                marginLeft: 40,
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
               <button
                 onClick={() => handleExcluirProduto(produto.id, produto.titulo)}
                 style={{

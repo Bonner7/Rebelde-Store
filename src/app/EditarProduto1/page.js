@@ -24,14 +24,13 @@ export default function EditarProduto1() {
 
   const [categorias, setCategorias] = useState([]);
 
-  // Buscar categorias cadastradas do backend
   useEffect(() => {
     async function carregarCategorias() {
       try {
         const res = await fetch('/api/categorias');
         if (!res.ok) throw new Error("Erro ao buscar categorias");
         const data = await res.json();
-        setCategorias(data); // espera array de categorias [{id, nome}, ...]
+        setCategorias(data);
       } catch (error) {
         console.error("Erro ao carregar categorias:", error);
       }
@@ -39,7 +38,6 @@ export default function EditarProduto1() {
     carregarCategorias();
   }, []);
 
-  // Carregar produto para editar
   useEffect(() => {
     async function carregarProduto() {
       try {
@@ -59,6 +57,11 @@ export default function EditarProduto1() {
     }
     if (id) carregarProduto();
   }, [id]);
+
+  const nomeCategoria = categorias.length > 0 && categoria
+  ? (categorias.find(cat => cat.id === parseInt(categoria))?.nome || "")
+  : "";
+
 
   const handleImagemSelecionada = (e) => {
     const file = e.target.files[0];
@@ -108,7 +111,6 @@ export default function EditarProduto1() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative" }}>
-
       {/* Barra superior */}
       <div style={{
         width: "100%",
@@ -148,7 +150,6 @@ export default function EditarProduto1() {
         marginTop: "60px",
         gap: "60px",
       }}>
-
         {/* Imagem */}
         <label style={{
           width: "300px",
@@ -194,22 +195,18 @@ export default function EditarProduto1() {
           <input type="text" placeholder="Título" value={titulo} onChange={(e) => setTitulo(e.target.value)} style={inputEstilo} required />
           <input type="number" placeholder="Valor" value={valor} onChange={(e) => setValor(e.target.value)} style={inputEstilo} required />
 
-          {/* Categoria - select dinâmico */}
-          
-        <select
-  value={categoria}
-  onChange={(e) => setCategoria(e.target.value)}
-  style={inputEstilo}
-  required
->
-  <option value="">Selecione uma categoria</option>
-  {categorias.map(cat => (
-    <option key={cat.id} value={cat.id}>
-      {cat.nome}
-    </option>
-  ))}
-</select>
-
+          {/* Categoria (desabilitada) */}
+          <input
+            type="text"
+            value={nomeCategoria}
+            disabled
+            style={{
+              ...inputEstilo,
+              backgroundColor: '#eee',
+              cursor: 'not-allowed',
+              color: '#555'
+            }}
+          />
 
           <input type="number" placeholder="Estoque" value={estoque} onChange={(e) => setEstoque(e.target.value)} style={inputEstilo} required />
           <textarea placeholder="Descrição" value={descricao} onChange={(e) => setDescricao(e.target.value)} style={textareaEstilo} required />
@@ -243,11 +240,11 @@ export default function EditarProduto1() {
           </Alert>
         </div>
       )}
-
     </div>
   );
 }
 
+// Estilos
 const inputEstilo = {
   height: "40px",
   border: "1px solid #000",
