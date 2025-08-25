@@ -49,7 +49,6 @@ export default function TelaInicial() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
-      {/* BARRA 1 */}
       <div
         style={{
           width: "100%",
@@ -66,7 +65,6 @@ export default function TelaInicial() {
         </div>
       </div>
 
-      {/* BARRA 2 */}
       <div
         style={{
           width: "100%",
@@ -132,7 +130,6 @@ export default function TelaInicial() {
         </form>
       </div>
 
-      {/* BARRA 3 - só o fundo rosa e altura 296px */}
       <div
         style={{
           width: "100%",
@@ -141,7 +138,6 @@ export default function TelaInicial() {
         }}
       />
 
-      {/* Container das bolinhas das categorias - abaixo da barra 3 */}
       <div
         style={{
           display: "flex",
@@ -194,7 +190,6 @@ export default function TelaInicial() {
         )}
       </div>
 
-      {/* Texto "LANÇAMENTO" com linha */}
       <div
         style={{
           display: "flex",
@@ -224,7 +219,6 @@ export default function TelaInicial() {
         />
       </div>
 
-      {/* Quadrados dos lançamentos */}
       <div
         style={{
           display: "flex",
