@@ -1,3 +1,4 @@
+import Link from "next/link";
 import db from "@/lib/db";
 import Instagram from './instagram.js';
 import Whatsapp from './whatsapp.js';
@@ -23,16 +24,16 @@ export default async function GerenciamentoEstoque() {
             <Instagram />
             <Whatsapp />
           </div>
-          
         </div>
-        <div style={{
-            marginRight: '95%'
-          }}>
-            <Image
-              src={seta}
-              alt="Logo da Loja"
-            />
-          </div>
+
+        <div style={{ marginRight: '94%', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Link href="/tela-inicial" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <Image src={seta} alt="Voltar" style={{ cursor: "pointer" }} />
+            <span style={{ fontSize: 20, fontFamily: 'Roboto, sans-serif', color: '#000', fontWeight: 'bold' }}>
+              VOLTAR
+            </span>
+          </Link>
+        </div>
 
         <div style={{
           marginTop: 100,

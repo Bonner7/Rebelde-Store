@@ -1,8 +1,11 @@
 "use client";
 
+import seta from './imagem/seta.png'
 import { useState, useEffect } from "react";
 import Instagram from './instagram.js';
 import Whatsapp from './whatsapp.js';
+import Link from "next/link";
+import Image from "next/image";
 
 export default function AdicionarProduto() {
   const [titulo, setTitulo] = useState("");
@@ -16,7 +19,6 @@ export default function AdicionarProduto() {
   const [imagemBase64, setImagemBase64] = useState(null);
 
   useEffect(() => {
-    // Buscar categorias existentes
     const buscarCategorias = async () => {
       const res = await fetch("/api/categorias");
       const data = await res.json();
@@ -39,65 +41,62 @@ export default function AdicionarProduto() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  const categoriaFinal = novaCategoria.trim() || categoriaSelecionada;
+    const categoriaFinal = novaCategoria.trim() || categoriaSelecionada;
 
-  if (!categoriaFinal) {
-    alert("Por favor, selecione ou adicione uma categoria.");
-    return;
-  }
+    if (!categoriaFinal) {
+      alert("Por favor, selecione ou adicione uma categoria.");
+      return;
+    }
 
-  try {
-    // 🔥 SALVAR NOVA CATEGORIA, SE INFORMADA
-    if (novaCategoria.trim()) {
-      const resCategoria = await fetch('/api/categorias', {
+    try {
+      if (novaCategoria.trim()) {
+        const resCategoria = await fetch('/api/categorias', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nome: novaCategoria.trim() })
+        });
+
+        if (!resCategoria.ok) {
+          throw new Error("Erro ao salvar nova categoria.");
+        }
+      }
+
+      const produto = {
+        titulo,
+        valor,
+        categoria: categoriaFinal,
+        estoque,
+        descricao,
+        imagemBase64
+      };
+
+      const response = await fetch('/api/produtos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nome: novaCategoria.trim() })
+        body: JSON.stringify(produto),
       });
 
-      if (!resCategoria.ok) {
-        throw new Error("Erro ao salvar nova categoria.");
+      if (response.ok) {
+        alert('Produto adicionado com sucesso!');
+        setTitulo("");
+        setValor("");
+        setCategoriaSelecionada("");
+        setNovaCategoria("");
+        setEstoque("");
+        setDescricao("");
+        setImagemSelecionada(null);
+        setImagemBase64(null);
+        window.location.href = "/GerenciamentoEstoque";
+      } else {
+        alert('Erro ao adicionar produto');
       }
+    } catch (error) {
+      console.error(error);
+      alert('Erro no envio');
     }
-
-    // 🔥 SALVAR PRODUTO
-    const produto = {
-      titulo,
-      valor,
-      categoria: categoriaFinal,
-      estoque,
-      descricao,
-      imagemBase64
-    };
-
-    const response = await fetch('/api/produtos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(produto),
-    });
-
-    if (response.ok) {
-      alert('Produto adicionado com sucesso!');
-      setTitulo("");
-      setValor("");
-      setCategoriaSelecionada("");
-      setNovaCategoria("");
-      setEstoque("");
-      setDescricao("");
-      setImagemSelecionada(null);
-      setImagemBase64(null);
-      window.location.href = "/GerenciamentoEstoque";
-    } else {
-      alert('Erro ao adicionar produto');
-    }
-  } catch (error) {
-    console.error(error);
-    alert('Erro no envio');
-  }
-};
-
+  };
 
   const handleCancelar = () => {
     window.location.href = "/GerenciamentoEstoque";
@@ -105,7 +104,6 @@ export default function AdicionarProduto() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-
       {/* Barra superior */}
       <div style={{
         width: "100%",
@@ -119,6 +117,16 @@ export default function AdicionarProduto() {
           <Instagram />
           <Whatsapp />
         </div>
+      </div>
+
+      {/* Botão Voltar */}
+       <div style={{ marginRight: '94%', marginTop:"1%",display: 'flex', alignItems: 'center', gap: 10 }}>
+          <Link href="/GerenciamentoEstoque" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+            <Image src={seta} alt="Voltar" style={{ cursor: "pointer" }} />
+            <span style={{ fontSize: 20, fontFamily: 'Roboto, sans-serif', color: '#000', fontWeight: 'bold' }}>
+              VOLTAR
+            </span>
+          </Link>
       </div>
 
       {/* Título */}
@@ -205,7 +213,6 @@ export default function AdicionarProduto() {
             style={estiloInput}
           />
 
-          {/* Categoria */}
           <select
             value={categoriaSelecionada}
             onChange={(e) => setCategoriaSelecionada(e.target.value)}
@@ -219,7 +226,6 @@ export default function AdicionarProduto() {
             <option value="nova">➕ Adicionar nova categoria...</option>
           </select>
 
-          {/* Campo para nova categoria */}
           {categoriaSelecionada === "nova" && (
             <input
               type="text"
@@ -248,16 +254,11 @@ export default function AdicionarProduto() {
             style={estiloTextArea}
           />
 
-          {/* Botões */}
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "16px", marginTop: "20px" }}>
             <button type="submit" style={botaoVerde}>Salvar</button>
             <button type="button" onClick={handleCancelar} style={botaoVermelho}>Cancelar</button>
           </div>
         </form>
-      </div>
-
-      <div style={{ marginTop: "80px" }}>
-        <a href="/GerenciamentoEstoque">Voltar</a>
       </div>
     </div>
   );
