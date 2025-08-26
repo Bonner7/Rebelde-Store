@@ -1,6 +1,8 @@
 import db from "@/lib/db";
 import Instagram from './instagram.js';
 import Whatsapp from './whatsapp.js';
+import seta from './imagem/seta.png';
+import Image from "next/image.js";
 
 export default async function GerenciamentoEstoque() {
   const produtosRes = await db.query("SELECT * FROM produto ORDER BY id DESC");
@@ -9,8 +11,6 @@ export default async function GerenciamentoEstoque() {
   return (
     <>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20 }}>
-
-        {/* Barra superior */}
         <div style={{
           width: "100%",
           height: 84,
@@ -23,9 +23,17 @@ export default async function GerenciamentoEstoque() {
             <Instagram />
             <Whatsapp />
           </div>
+          
         </div>
+        <div style={{
+            marginRight: '95%'
+          }}>
+            <Image
+              src={seta}
+              alt="Logo da Loja"
+            />
+          </div>
 
-        {/* Título centralizado */}
         <div style={{
           marginTop: 100,
           fontFamily: "Roboto, sans-serif",
@@ -37,7 +45,7 @@ export default async function GerenciamentoEstoque() {
           Gerenciamento de Estoque
         </div>
 
-        {/* Quadrado com botões centralizado */}
+              
         <div style={{
           width: 1278,
           height: 106,
@@ -61,8 +69,9 @@ export default async function GerenciamentoEstoque() {
             EDITAR
           </a>
         </div>
+        
 
-        {/* Cabeçalho das colunas */}
+      
         <div style={{
           width: 1278,
           marginTop: 40,
@@ -80,7 +89,7 @@ export default async function GerenciamentoEstoque() {
           <div style={{ marginLeft: 100 }}>Valor</div>
         </div>
 
-        {/* Linha abaixo do cabeçalho */}
+    
         <div style={{
           width: 1278,
           height: 2,
@@ -88,7 +97,7 @@ export default async function GerenciamentoEstoque() {
           marginTop: 10
         }} />
 
-        {/* Listagem dos produtos */}
+     
         {produtos.map(produto => (
           <div
             key={produto.id}
@@ -100,7 +109,7 @@ export default async function GerenciamentoEstoque() {
               width: 1278
             }}
           >
-            {/* Produto (imagem + nome) */}
+           
             <div style={{ display: "flex", flexDirection: "row", alignItems: "center", width: 300 }}>
               <img
                 src={produto.imagem_url}
@@ -118,27 +127,24 @@ export default async function GerenciamentoEstoque() {
               </div>
             </div>
 
-            {/* Categoria */}
+           
             <div style={{ marginLeft: 90, width: 200, fontFamily: "Roboto, sans-serif", fontSize: 24 }}>
               {produto.categoria}
             </div>
 
-            {/* Quantidade */}
+           
             <div style={{ marginLeft: 100, width: 100, fontFamily: "Roboto, sans-serif", fontSize: 24 }}>
               {produto.estoque}
             </div>
 
-            {/* Valor */}
+        
             <div style={{ marginLeft: 100, fontFamily: "Roboto, sans-serif", fontSize: 24 }}>
               R$ {Number(produto.valor).toFixed(2)}
             </div>
           </div>
         ))}
 
-        {/* Link voltar */}
-        <div style={{ marginTop: 100 }}>
-          <a href="tela-inicial" style={{ fontSize: 20 }}>Voltar</a>
-        </div>
+      
       </div>
     </>
   );
