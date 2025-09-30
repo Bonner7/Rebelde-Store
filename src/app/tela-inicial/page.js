@@ -49,6 +49,7 @@ export default function TelaInicial() {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
 
+      {/* Barra superior com Instagram e Whatsapp */}
       <div
         style={{
           width: "100%",
@@ -65,6 +66,7 @@ export default function TelaInicial() {
         </div>
       </div>
 
+      {/* Barra com logo, links e busca */}
       <div
         style={{
           width: "100%",
@@ -130,66 +132,61 @@ export default function TelaInicial() {
         </form>
       </div>
 
+      {/* Grid de categorias */}
+<div
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    gap: "60px",  // aumento do espaçamento entre as bolas
+    flexWrap: "wrap",
+    padding: "20px",
+    boxSizing: "border-box",
+    maxWidth: "100%",
+  }}
+>
+  {categorias.length === 0 ? (
+    <p>Carregando categorias...</p>
+  ) : (
+    categorias.map((cat) => (
       <div
-        style={{
-          width: "100%",
-          height: "296px",
-          backgroundColor: "#FFD7D7",
-        }}
-      />
-
-      <div
+        key={cat.id}
+        onClick={() => handleCategoriaClick(cat.nome)}
         style={{
           display: "flex",
-          justifyContent: "center",
-          gap: "40px",
-          flexWrap: "wrap",
-          padding: "20px",
-          boxSizing: "border-box",
-          maxWidth: "100%",
+          flexDirection: "column",
+          alignItems: "center",
+          cursor: "pointer",
+          userSelect: "none",
+          minWidth: 130,
         }}
       >
-        {categorias.length === 0 ? (
-          <p>Carregando categorias...</p>
-        ) : (
-          categorias.map((cat) => (
-            <div
-              key={cat.id}
-              onClick={() => handleCategoriaClick(cat.nome)}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                cursor: "pointer",
-                userSelect: "none",
-                minWidth: 70,
-              }}
-            >
-              <div
-                style={{
-                  width: 70,
-                  height: 70,
-                  borderRadius: "50%",
-                  backgroundColor: "#FF4791",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: 16,
-                  boxShadow: "0 0 5px rgba(0,0,0,0.2)"
-                }}
-              >
-                {cat.nome[0].toUpperCase()}
-              </div>
-              <span style={{ marginTop: 8, fontSize: 14, color: "#000", fontWeight: "600", textAlign: "center" }}>
-                {cat.nome}
-              </span>
-            </div>
-          ))
-        )}
+        <div
+          style={{
+            width: 130,
+            height: 130,
+            borderRadius: "50%",
+            backgroundColor: "#FF4791",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            color: "white",
+            fontWeight: "bold",
+            fontSize: 36, // letra maior
+            boxShadow: "0 0 5px rgba(0,0,0,0.2)"
+          }}
+        >
+          {cat.nome[0].toUpperCase()}
+        </div>
+        <span style={{ marginTop: 12, fontSize: 18, color: "#000", fontWeight: "600", textAlign: "center" }}>
+          {cat.nome}
+        </span>
       </div>
+    ))
+  )}
+</div>
 
+
+      {/* Seção de lançamentos */}
       <div
         style={{
           display: "flex",
