@@ -14,13 +14,14 @@ export default function TelaInicial() {
   const [categorias, setCategorias] = useState([]);
   const [busca, setBusca] = useState("");
 
+  // Buscar produtos
   useEffect(() => {
     async function fetchLancamentos() {
       try {
-        const res = await fetch("/api/produtos/lancamentos");
-        if (!res.ok) throw new Error("Erro ao buscar lançamentos");
+        const res = await fetch("/api/produtos"); // endpoint que traz todos os produtos
+        if (!res.ok) throw new Error("Erro ao buscar produtos");
         const dados = await res.json();
-        setLancamentos(dados);
+        setLancamentos(dados.slice(-12).sort((a, b) => b.id - a.id));
       } catch (err) {
         console.error(err);
       }
@@ -28,6 +29,7 @@ export default function TelaInicial() {
     fetchLancamentos();
   }, []);
 
+  // Buscar categorias
   useEffect(() => {
     async function fetchCategorias() {
       try {
@@ -48,7 +50,6 @@ export default function TelaInicial() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-
       {/* Barra superior com Instagram e Whatsapp */}
       <div
         style={{
@@ -133,58 +134,57 @@ export default function TelaInicial() {
       </div>
 
       {/* Grid de categorias */}
-<div
-  style={{
-    display: "flex",
-    justifyContent: "center",
-    gap: "60px",  // aumento do espaçamento entre as bolas
-    flexWrap: "wrap",
-    padding: "20px",
-    boxSizing: "border-box",
-    maxWidth: "100%",
-  }}
->
-  {categorias.length === 0 ? (
-    <p>Carregando categorias...</p>
-  ) : (
-    categorias.map((cat) => (
       <div
-        key={cat.id}
-        onClick={() => handleCategoriaClick(cat.nome)}
         style={{
           display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          cursor: "pointer",
-          userSelect: "none",
-          minWidth: 130,
+          justifyContent: "center",
+          gap: "60px",
+          flexWrap: "wrap",
+          padding: "20px",
+          boxSizing: "border-box",
+          maxWidth: "100%",
         }}
       >
-        <div
-          style={{
-            width: 130,
-            height: 130,
-            borderRadius: "50%",
-            backgroundColor: "#FF4791",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            color: "white",
-            fontWeight: "bold",
-            fontSize: 36, // letra maior
-            boxShadow: "0 0 5px rgba(0,0,0,0.2)"
-          }}
-        >
-          {cat.nome[0].toUpperCase()}
-        </div>
-        <span style={{ marginTop: 12, fontSize: 18, color: "#000", fontWeight: "600", textAlign: "center" }}>
-          {cat.nome}
-        </span>
+        {categorias.length === 0 ? (
+          <p>Carregando categorias...</p>
+        ) : (
+          categorias.map((cat) => (
+            <div
+              key={cat.id}
+              onClick={() => handleCategoriaClick(cat.nome)}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                cursor: "pointer",
+                userSelect: "none",
+                minWidth: 130,
+              }}
+            >
+              <div
+                style={{
+                  width: 130,
+                  height: 130,
+                  borderRadius: "50%",
+                  backgroundColor: "#FF4791",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 36,
+                  boxShadow: "0 0 5px rgba(0,0,0,0.2)"
+                }}
+              >
+                {cat.nome[0].toUpperCase()}
+              </div>
+              <span style={{ marginTop: 12, fontSize: 18, color: "#000", fontWeight: "600", textAlign: "center" }}>
+                {cat.nome}
+              </span>
+            </div>
+          ))
+        )}
       </div>
-    ))
-  )}
-</div>
-
 
       {/* Seção de lançamentos */}
       <div
@@ -216,68 +216,105 @@ export default function TelaInicial() {
         />
       </div>
 
+      {/* Grid de lançamentos centralizado */}
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          gap: "20px",
-          padding: "0 20px",
-          flexWrap: "wrap"
+          display: "grid",
+          gridTemplateColumns: "repeat(6, 242px)", // 6 produtos por linha
+          gap: "60px 60px", // espaçamento horizontal e vertical
+          justifyContent: "center", // centraliza o grid
+          margin: "0 auto 20px auto", // centraliza o bloco horizontalmente
+          maxWidth: "1600px", // 242*6 + gaps aprox
+          padding: "0",
         }}
       >
         {lancamentos.length === 0 ? (
-          <p>Carregando lançamentos...</p>
+          <p style={{ textAlign: "center", width: "100%", marginTop: "50px" }}>
+            Nenhum produto encontrado.
+          </p>
         ) : (
-          lancamentos
-            .filter(produto => produto.titulo.toLowerCase().includes(busca.toLowerCase()))
-            .map((produto) => (
-              <div
-                key={produto.id}
+          lancamentos.map((produto) => (
+            <div
+              key={produto.id}
+              style={{
+                width: "242px",
+                border: "1px solid #ccc",
+                borderRadius: "12px",
+                padding: "10px",
+                boxSizing: "border-box",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                cursor: "pointer",
+                backgroundColor: "#fff",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+              }}
+            >
+              {/* Imagem */}
+              <img
+                src={produto.imagem_url || "/uploads/default.png"}
+                alt={produto.titulo}
                 style={{
-                  width: "200px",
-                  height: "266px",
-                  border: "2px solid black",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  padding: 10,
-                  boxSizing: "border-box",
-                  cursor: "pointer"
-                }}
-                onClick={() => router.push(`/produto/${produto.id}`)}
-              >
-                <img
-                  src={produto.imagem_url}
-                  alt={produto.titulo}
-                  style={{
-                    width: "100%",
-                    height: "160px",
-                    objectFit: "contain",
-                    marginBottom: 10,
-                    borderRadius: 8,
-                  }}
-                />
-                <div style={{
-                  fontSize: 14,
-                  marginBottom: 5,
                   width: "100%",
-                  textAlign: "left"
+                  height: "207px",
+                  objectFit: "cover",
+                  borderRadius: "8px"
+                }}
+              />
+
+              {/* Conteúdo do produto */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "5px", flexGrow: 1 }}>
+                <h3 style={{
+                  fontSize: "16px",
+                  margin: "10px 0 0 0",
+                  fontWeight: "600",
+                  color: "#333",
+                  textAlign: "left",
                 }}>
                   {produto.titulo}
-                </div>
-                <div style={{
+                </h3>
+
+                <p style={{
                   fontWeight: "bold",
-                  fontSize: 16,
-                  width: "100%",
-                  textAlign: "left"
+                  fontSize: "18px",
+                  margin: "0",
+                  textAlign: "left",
+                  color: "#000"
                 }}>
                   R$ {Number(produto.valor).toFixed(2)}
-                </div>
+                </p>
+
+                <p style={{
+                  fontSize: "12px",
+                  color: "#555",
+                  textAlign: "center",
+                  margin: "5px 0"
+                }}>
+                  MAIS INFORMAÇÕES
+                </p>
               </div>
-            ))
+
+              <button
+                onClick={() => router.push(`/produto/${produto.id}`)}
+                style={{
+                  width: "100%", 
+                  marginTop: "5px",
+                  padding: "10px",
+                  backgroundColor: "#000",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "20px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  textAlign: "center"
+                }}
+              >
+                Visualizar
+              </button>
+            </div>
+          ))
         )}
       </div>
-
     </div>
   );
 }
