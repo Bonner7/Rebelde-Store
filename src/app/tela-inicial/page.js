@@ -21,7 +21,7 @@ export default function TelaInicial() {
         const res = await fetch("/api/produtos"); // endpoint que traz todos os produtos
         if (!res.ok) throw new Error("Erro ao buscar produtos");
         const dados = await res.json();
-        setLancamentos(dados.slice(-12).sort((a, b) => b.id - a.id));
+        setLancamentos(dados.slice(0, 12)); // pega os 12 primeiros (mais novos)
       } catch (err) {
         console.error(err);
       }
@@ -221,9 +221,7 @@ export default function TelaInicial() {
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(6, 242px)", // 6 produtos por linha
-          gap: "60px 60px", // espaçamento horizontal e vertical
-          justifyContent: "center", // centraliza o grid
-          margin: "0 auto 20px auto", // centraliza o bloco horizontalmente
+          justifyContent: "space-around", // centraliza o grid
           maxWidth: "1600px", // 242*6 + gaps aprox
           padding: "0",
         }}
@@ -252,7 +250,7 @@ export default function TelaInicial() {
             >
               {/* Imagem */}
               <img
-                src={produto.imagem_url || "/uploads/default.png"}
+                src={produto.imagem_url}
                 alt={produto.titulo}
                 style={{
                   width: "100%",

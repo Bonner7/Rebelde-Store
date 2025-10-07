@@ -12,6 +12,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@mui/material": "^7.2.0",
+    "@vercel/blob": "^2.0.0",
     "bcryptjs": "^3.0.2",
     "formidable": "^3.5.4",
     "formidable-serverless": "^1.1.1",

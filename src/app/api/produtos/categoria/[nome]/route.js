@@ -1,7 +1,7 @@
 import db from "@/lib/db";
 
 export async function GET(req, { params }) {
-  let {nome} = params;
+  let {nome} = await params;
   nome = decodeURIComponent(nome);
   
   try {

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { put } from "@vercel/blob";
 import fs from 'fs';
 import path from 'path';
 import db from '@/lib/db';
@@ -35,25 +36,22 @@ export async function POST(request) {
     let imagem_url = null;
 
     if (imagemBase64) {
-      const matches = imagemBase64.match(/^data:(image\/\w+);base64,(.+)$/);
-      if (!matches) {
-        return new Response('Imagem inválida', { status: 400 });
-      }
+  const matches = imagemBase64.match(/^data:(image\/\w+);base64,(.+)$/);
+  if (!matches) {
+    return new Response('Imagem inválida', { status: 400 });
+  }
 
-      const ext = matches[1].split('/')[1];
-      const base64Data = matches[2];
-      const fileName = `produto_${Date.now()}.${ext}`;
-      const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+  const ext = matches[1].split('/')[1];
+  const base64Data = matches[2];
+  const fileName = `produto_${Date.now()}.${ext}`;
 
-      if (!fs.existsSync(uploadsDir)) {
-        fs.mkdirSync(uploadsDir, { recursive: true });
-      }
+  // ⬅️ Aguardar o upload e pegar a URL pública
+  const blob = await put(fileName, Buffer.from(base64Data, 'base64'), {
+    access: 'public',
+  });
 
-      const filePath = path.join(uploadsDir, fileName);
-      fs.writeFileSync(filePath, Buffer.from(base64Data, 'base64'));
-
-      imagem_url = `/uploads/${fileName}`;
-    }
+  imagem_url = blob.url; // ⬅️ Salvar a URL completa
+}
 
     // Inserir produto com categoria_id
     await db.query(
