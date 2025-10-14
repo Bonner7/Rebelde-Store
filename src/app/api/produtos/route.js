@@ -29,6 +29,7 @@ async function uploadBase64ToVercelBlob(base64Data, productName, index = 0) {
     return null; 
   }
 }
+
 // --------------------------------------------------
 
 // GET: Lista todos os produtos com nome da categoria
@@ -56,6 +57,10 @@ export async function POST(request) {
         imagemPrincipalBase64, imagensExtrasBase64,
         cores, tamanhos
     } = data;
+
+    if (!titulo || !valor || !categoria) {
+      return new Response("Campos obrigatórios faltando", { status: 400 });
+    }
 
     // Buscar id da categoria pelo nome
     const catResult = await db.query("SELECT id FROM categoria WHERE nome = $1", [categoria]);
@@ -93,12 +98,12 @@ export async function POST(request) {
         descricao, 
         imagemPrincipalUrl, 
         JSON.stringify(imagensExtrasUrls), 
-        JSON.stringify(cores), 
-        JSON.stringify(tamanhos) 
+        JSON.stringify(cores || []), 
+        JSON.stringify(tamanhos || []) 
       ]
     );
 
-    return new Response('Produto adicionado', { status: 201 });
+    return new Response('Produto adicionado com sucesso', { status: 201 });
   } catch (err) {
     console.error("Erro no POST /api/produtos:", err);
     return new Response('Erro interno', { status: 500 });

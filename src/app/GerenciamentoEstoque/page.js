@@ -6,7 +6,13 @@ import seta from './imagem/seta.png';
 import Image from "next/image.js";
 
 export default async function GerenciamentoEstoque() {
-  const produtosRes = await db.query("SELECT * FROM produto ORDER BY id DESC");
+  const produtosRes = await db.query(`
+    SELECT p.*, c.nome AS categoria_nome
+    FROM produto p
+    LEFT JOIN categoria c ON p.categoria_id = c.id
+    ORDER BY p.id DESC
+  `);
+
   const produtos = produtosRes.rows;
 
   return (
@@ -46,7 +52,6 @@ export default async function GerenciamentoEstoque() {
           Gerenciamento de Estoque
         </div>
 
-              
         <div style={{
           width: 1278,
           height: 106,
@@ -62,17 +67,15 @@ export default async function GerenciamentoEstoque() {
             ADICIONAR
           </a>
 
-           <a href="/ExcluirProduto" style={{ ...buttonStyle, textDecoration: "none" }}>
+          <a href="/ExcluirProduto" style={{ ...buttonStyle, textDecoration: "none" }}>
             EXCLUIR
           </a>
-          
+
           <a href="/EditarProduto" style={{ ...buttonStyle, textDecoration: "none" }}>
             EDITAR
           </a>
         </div>
-        
 
-      
         <div style={{
           width: 1278,
           marginTop: 40,
@@ -90,7 +93,6 @@ export default async function GerenciamentoEstoque() {
           <div style={{ marginLeft: 100 }}>Valor</div>
         </div>
 
-    
         <div style={{
           width: 1278,
           height: 2,
@@ -98,7 +100,6 @@ export default async function GerenciamentoEstoque() {
           marginTop: 10
         }} />
 
-     
         {produtos.map(produto => (
           <div
             key={produto.id}
@@ -110,7 +111,6 @@ export default async function GerenciamentoEstoque() {
               width: 1278
             }}
           >
-           
             <div style={{ display: "flex", flexDirection: "row", alignItems: "center", width: 300 }}>
               <img
                 src={produto.imagem_url}
@@ -128,24 +128,19 @@ export default async function GerenciamentoEstoque() {
               </div>
             </div>
 
-           
             <div style={{ marginLeft: 90, width: 200, fontFamily: "Roboto, sans-serif", fontSize: 24 }}>
-              {produto.categoria}
+              {produto.categoria_nome} {/* Mostra corretamente o nome da categoria */}
             </div>
 
-           
             <div style={{ marginLeft: 100, width: 100, fontFamily: "Roboto, sans-serif", fontSize: 24 }}>
               {produto.estoque}
             </div>
 
-        
             <div style={{ marginLeft: 100, fontFamily: "Roboto, sans-serif", fontSize: 24 }}>
               R$ {Number(produto.valor).toFixed(2)}
             </div>
           </div>
         ))}
-
-      
       </div>
     </>
   );
@@ -166,4 +161,3 @@ const buttonStyle = {
   justifyContent: "center",
   alignItems: "center",
 };
-
