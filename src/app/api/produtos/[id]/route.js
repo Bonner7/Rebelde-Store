@@ -41,7 +41,7 @@ async function uploadImage(imagemBase64, imagemAntiga = null) {
 
 // --- GET produto por ID ---
 export async function GET(req, { params }) {
-  const { id } = params;
+  const { id } = await params;
   const produtoId = parseInt(id);
 
   if (isNaN(produtoId)) return new Response("ID inválido", { status: 400 });

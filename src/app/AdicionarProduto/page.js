@@ -6,7 +6,6 @@ import Instagram from './instagram.js';
 import Whatsapp from './whatsapp.js';
 import Link from "next/link";
 import Image from "next/image";
-// REMOVIDO: import { put } from '@vercel/blob'; // <- REMOVIDO: O 'put' deve ser usado apenas no lado do servidor (API Route).
 
 export default function AdicionarProduto() {
   const [titulo, setTitulo] = useState("");
@@ -22,13 +21,11 @@ export default function AdicionarProduto() {
   const [imagensExtras, setImagensExtras] = useState([null, null, null]);
   const [imagensExtrasBase64, setImagensExtrasBase64] = useState([null, null, null]);
 
-  // Cores (Múltipla Seleção)
   const coresMaisUsadas = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#FFA500", "#800080", "#00FFFF", "#FFC0CB", "#A52A2A", "#808080", "#000000", "#FFFFFF", "#6B8E23", "#4682B4", "#D2B48C", "#FFD700", "#008080", "#FF4500"];
   const [abrirPopoverCores, setAbrirPopoverCores] = useState(false);
-  const [coresSelecionadas, setCoresSelecionadas] = useState([]); // Array para múltiplas cores
-  const [codigoCorManual, setCodigoCorManual] = useState(""); // Guarda o valor do input HEX
+  const [coresSelecionadas, setCoresSelecionadas] = useState([]); 
+  const [codigoCorManual, setCodigoCorManual] = useState(""); 
 
-  // Tamanhos (Múltipla Seleção)
   const tamanhosDisponiveis = [
     "PP", "P", "M", "G", "GG", "XG", "XXG", "3G", "4G", "5G", "6G",
     "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "50", "52", "54", "56", "58", "60",
@@ -41,7 +38,6 @@ export default function AdicionarProduto() {
   const refPopoverTamanhos = useRef();
 
   useEffect(() => {
-    // Buscar categorias
     const buscarCategorias = async () => {
       const res = await fetch("/api/categorias");
       const data = await res.json();
@@ -49,7 +45,6 @@ export default function AdicionarProduto() {
     };
     buscarCategorias();
 
-    // Fechar popovers clicando fora
     const handleClickFora = (e) => {
       if (refPopoverCores.current && !refPopoverCores.current.contains(e.target)) {
         setAbrirPopoverCores(false);
@@ -71,10 +66,8 @@ export default function AdicionarProduto() {
     });
   };
   
-  // 💡 NOVO HELPER: Remove o prefixo do Data URL.
   const limparBase64 = (base64) => {
       if (!base64) return null;
-      // Remove o prefixo (ex: "data:image/png;base64,")
       return base64.replace(/^data:image\/(?:[a-z]+);base64,/, "");
   };
 
@@ -93,7 +86,6 @@ export default function AdicionarProduto() {
     const novasBase64 = [...imagensExtrasBase64]; novasBase64[index] = await converterBase64(file); setImagensExtrasBase64(novasBase64);
   });
 
-  // Lógica para adicionar/remover cores
   const toggleCor = (cor) => {
     const corNormalizada = cor.toUpperCase();
     if (coresSelecionadas.includes(corNormalizada)) {
@@ -101,21 +93,17 @@ export default function AdicionarProduto() {
     } else {
       setCoresSelecionadas([...coresSelecionadas, corNormalizada]);
     }
-    // Sempre que clicar em uma bolinha, limpa o input manual.
     setCodigoCorManual("");
   };
 
-  // Lógica para lidar com o input HEX
   const handleCodigoCorChange = (e) => {
     let newCode = e.target.value.toUpperCase().trim();
-    // Garante que o input comece com # se tiver algum valor
     if (newCode.length > 0 && !newCode.startsWith('#')) {
         newCode = '#' + newCode;
     }
     setCodigoCorManual(newCode);
   };
   
-  // FUNÇÃO CHAVE: Adiciona a cor manual, verifica validade e repetição.
   const adicionarCorManual = () => {
     const cor = codigoCorManual.toUpperCase().trim();
     const corValida = /^#[0-9A-F]{6}$/.test(cor);
@@ -126,19 +114,16 @@ export default function AdicionarProduto() {
         } else {
             setCoresSelecionadas([...coresSelecionadas, cor]);
         }
-        // Limpa o input após tentar adicionar
         setCodigoCorManual("");
     } else if (cor.length > 0) {
         alert("Código HEX inválido. Use o formato #RRGGBB (ex: #FF4791).");
     }
   };
 
-  // FUNÇÃO CHAVE: Remove uma cor selecionada ao clicar nas bolinhas horizontais.
   const removerCor = (cor) => {
     setCoresSelecionadas(coresSelecionadas.filter(c => c !== cor));
   };
   
-  // Lógica para adicionar/remover Tamanhos
   const toggleTamanho = (tamanho) => {
     if (tamanhosSelecionados.includes(tamanho)) {
       setTamanhosSelecionados(tamanhosSelecionados.filter(t => t !== tamanho));
@@ -155,9 +140,7 @@ export default function AdicionarProduto() {
     if (coresSelecionadas.length === 0) { alert("Selecione pelo menos uma cor."); return; }
     if (tamanhosSelecionados.length === 0) { alert("Selecione pelo menos um tamanho."); return; }
     
-    // 💡 APLICANDO A LIMPEZA DA BASE64 ANTES DE ENVIAR
     const imagemPrincipalLimpa = limparBase64(imagemPrincipalBase64);
-    // Filtra e limpa apenas as imagens extras que foram realmente adicionadas
     const imagensExtrasLimpa = imagensExtrasBase64.map(limparBase64).filter(Boolean);
 
     if (!imagemPrincipalLimpa) { 
@@ -173,17 +156,15 @@ export default function AdicionarProduto() {
 
       const produto = {
         titulo, valor, categoria: categoriaFinal, estoque, descricao,
-        // 💡 ENVIANDO AS VERSÕES LIMPAS DA BASE64 PARA O SERVIDOR
         imagemPrincipalBase64: imagemPrincipalLimpa, 
         imagensExtrasBase64: imagensExtrasLimpa,
-        cores: coresSelecionadas, // Array de cores
-        tamanhos: tamanhosSelecionados // Array de tamanhos
+        cores: coresSelecionadas, 
+        tamanhos: tamanhosSelecionados 
       };
 
       const response = await fetch("/api/produtos", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(produto) });
       if (response.ok) {
         alert("Produto adicionado com sucesso!");
-        // Limpar estados
         setTitulo(""); setValor(""); setCategoriaSelecionada(""); setNovaCategoria("");
         setEstoque(""); setDescricao(""); setImagemPrincipal(null); setImagemPrincipalBase64(null);
         setImagensExtras([null, null, null]); setImagensExtrasBase64([null, null, null]);
@@ -196,12 +177,10 @@ export default function AdicionarProduto() {
 
   const handleCancelar = () => { window.location.href = "/GerenciamentoEstoque"; };
 
-  // Helper para exibir as cores selecionadas no input
   const coresDisplay = coresSelecionadas.length > 0
     ? coresSelecionadas.join(", ")
     : codigoCorManual || "Escolha a cor";
 
-  // Helper para exibir os tamanhos selecionados no input
   const tamanhosDisplay = tamanhosSelecionados.length > 0
     ? tamanhosSelecionados.join(", ")
     : "Selecione tamanhos";
