@@ -14,7 +14,6 @@ export default function TelaInicial() {
   const [categorias, setCategorias] = useState([]);
   const [busca, setBusca] = useState("");
 
-  // Buscar produtos
   useEffect(() => {
     async function fetchLancamentos() {
       try {
