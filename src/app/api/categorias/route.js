@@ -1,4 +1,4 @@
-import db from "@/lib/db"; // seu banco já configurado (DBeaver/PostgreSQL)
+import db from "@/lib/db";
 
 export async function GET() {
   try {
