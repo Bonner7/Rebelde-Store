@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Instagram from "./instagram";
-import Whatsapp from "./whatsapp";
+import seta from "./imagem/seta.png";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function ExcluirProduto() {
   const [produtos, setProdutos] = useState([]);
@@ -60,7 +61,8 @@ export default function ExcluirProduto() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20, alignItems: "center" }}>
-      {/* Barra superior */}
+      
+      {/* BARRA SUPERIOR */}
       <div
         style={{
           width: "100%",
@@ -70,14 +72,28 @@ export default function ExcluirProduto() {
           alignItems: "center",
           paddingLeft: 20,
         }}
-      >
-        <div style={{ gap: 20, display: "flex" }}>
-          <Instagram />
-          <Whatsapp />
-        </div>
+      ></div>
+
+      {/* BOTÃO VOLTAR NO TOPO ESQUERDO */}
+      <div style={{ marginRight: "94%", marginTop: "1", display: "flex", alignItems: "center", gap: 10 }}>
+        <Link href="/GerenciamentoEstoque" style={{ display: "flex", alignItems: "center", textDecoration: "none", gap: 8 }}>
+          
+          <Image 
+            src={seta} 
+            alt="Voltar" 
+            width={24} 
+            height={24} 
+            style={{ marginRight: 5 }} 
+          />
+
+          <span style={{ fontSize: 20, fontFamily: "Roboto, sans-serif", color: "#000", fontWeight: "bold" }}>
+            VOLTAR
+          </span>
+
+        </Link>
       </div>
 
-      {/* Título */}
+      {/* TÍTULO */}
       <div
         style={{
           width: 1100,
@@ -92,7 +108,7 @@ export default function ExcluirProduto() {
         EXCLUIR PRODUTO
       </div>
 
-      {/* Quadro com barra de pesquisa + categoria */}
+      {/* QUADRO DE BUSCA */}
       <div
         style={{
           width: 750,
@@ -110,7 +126,6 @@ export default function ExcluirProduto() {
           position: "relative",
         }}
       >
-        {/* Input busca */}
         <input
           type="text"
           placeholder="Buscar produto"
@@ -127,7 +142,7 @@ export default function ExcluirProduto() {
           }}
         />
 
-        {/* Botão categoria */}
+        {/* Seleção de categoria */}
         <div style={{ position: "relative" }}>
           <button
             onClick={() => setCategoriaAberta(!categoriaAberta)}
@@ -199,7 +214,7 @@ export default function ExcluirProduto() {
         </div>
       </div>
 
-      {/* Cabeçalho das colunas */}
+      {/* Cabeçalho */}
       <div
         style={{
           marginTop: 40,
@@ -230,7 +245,7 @@ export default function ExcluirProduto() {
         }}
       />
 
-      {/* Lista de produtos */}
+      {/* LISTA DE PRODUTOS */}
       {produtosFiltrados.length === 0 ? (
         <div
           style={{
@@ -257,6 +272,7 @@ export default function ExcluirProduto() {
               width: 1300,
             }}
           >
+            {/* nome + imagem */}
             <div
               style={{
                 display: "flex",
@@ -313,7 +329,7 @@ export default function ExcluirProduto() {
               R$ {Number(produto.valor).toFixed(2)}
             </div>
 
-            {/* Botão de exclusão */}
+            {/* BOTÃO EXCLUIR */}
             <div
               style={{
                 marginLeft: 40,

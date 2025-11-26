@@ -1,11 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Instagram from './instagram.js';
-import Whatsapp from './whatsapp.js';
 import logo from './imagem/logo.png';
+import lupa from "./imagem/lupa.png"
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+
+// IMPORT DAS IMAGENS DAS CATEGORIAS
+import calca from "./imagem/calca.png";
+import blusas from "./imagem/blusas.png";
+import pijama from "./imagem/pijamas.png";
+import saias from "./imagem/saias.png";
+import cosmeticos from "./imagem/cosmeticos.png";
+import short from "./imagem/short.png";
+import vestidos from "./imagem/vestidos.png";
 
 export default function TelaInicial() {
   const router = useRouter();
@@ -14,13 +22,24 @@ export default function TelaInicial() {
   const [categorias, setCategorias] = useState([]);
   const [busca, setBusca] = useState("");
 
+  // Mapa de imagens que serão usadas nas categorias
+  const imagensCategorias = {
+    "Blusas": blusas,
+    "Calças": calca,
+    "Pijamas": pijama,
+    "Saias": saias,
+    "Cosméticos": cosmeticos,
+    "Shorts": short,
+    "Vestidos": vestidos
+  };
+
   useEffect(() => {
     async function fetchLancamentos() {
       try {
-        const res = await fetch("/api/produtos"); // endpoint que traz todos os produtos
+        const res = await fetch("/api/produtos");
         if (!res.ok) throw new Error("Erro ao buscar produtos");
         const dados = await res.json();
-        setLancamentos(dados.slice(0, 12)); // pega os 12 primeiros (mais novos)
+        setLancamentos(dados.slice(0, 12));
       } catch (err) {
         console.error(err);
       }
@@ -28,7 +47,6 @@ export default function TelaInicial() {
     fetchLancamentos();
   }, []);
 
-  // Buscar categorias
   useEffect(() => {
     async function fetchCategorias() {
       try {
@@ -49,7 +67,8 @@ export default function TelaInicial() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      {/* Barra superior com Instagram e Whatsapp */}
+
+      {/* Barra superior */}
       <div
         style={{
           width: "100%",
@@ -59,14 +78,9 @@ export default function TelaInicial() {
           alignItems: "center",
           paddingLeft: "20px",
         }}
-      >
-        <div style={{ gap: "20px", display: "flex" }}>
-          <Instagram />
-          <Whatsapp />
-        </div>
-      </div>
+      />
 
-      {/* Barra com logo, links e busca */}
+      {/* Barra com logo e busca */}
       <div
         style={{
           width: "100%",
@@ -79,12 +93,7 @@ export default function TelaInicial() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
-          <Image
-            src={logo}
-            width={211}
-            height={215}
-            alt="Logo da Loja"
-          />
+          <Image src={logo} width={211} height={215} alt="Logo da Loja" />
 
           <div style={{ display: "flex", gap: "30px" }}>
             <span
@@ -115,21 +124,38 @@ export default function TelaInicial() {
           </div>
         </div>
 
-        <form method="post">
-          <input
-            type="text"
-            placeholder="Pesquisar..."
-            value={busca}
-            onChange={e => setBusca(e.target.value)}
-            style={{
-              padding: "10px",
-              fontSize: "16px",
-              borderRadius: "70px",
-              border: "1px solid #ccc",
-              width: "517px"
-            }}
-          />
-        </form>
+        <form method="post" style={{ position: "relative", display: "flex", alignItems: "center" }}>
+  
+  {/* Ícone da lupa */}
+  <Image 
+    src={lupa} 
+    alt="Buscar" 
+    width={22} 
+    height={22}
+    style={{
+      position: "absolute",
+      left: 15,
+      top: "50%",
+      transform: "translateY(-50%)"
+    }}
+  />
+
+  {/* Input de busca */}
+  <input
+    type="text"
+    placeholder="Pesquisar..."
+    value={busca}
+    onChange={e => setBusca(e.target.value)}
+    style={{
+      padding: "10px 10px 10px 45px",  // espaço para a lupa
+      fontSize: "16px",
+      borderRadius: "70px",
+      border: "1px solid #ccc",
+      width: "517px"
+    }}
+  />
+
+</form>
       </div>
 
       {/* Grid de categorias */}
@@ -160,6 +186,8 @@ export default function TelaInicial() {
                 minWidth: 130,
               }}
             >
+
+              {/* BOLINHA DE CATEGORIA COM IMAGEM */}
               <div
                 style={{
                   width: 130,
@@ -169,15 +197,33 @@ export default function TelaInicial() {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: 36,
+                  overflow: "hidden",
                   boxShadow: "0 0 5px rgba(0,0,0,0.2)"
                 }}
               >
-                {cat.nome[0].toUpperCase()}
+                <Image
+                  src={imagensCategorias[cat.nome] || "/uploads/default.png"}
+                  alt={cat.nome}
+                  width={130}
+                  height={130}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: "50%"
+                  }}
+                />
               </div>
-              <span style={{ marginTop: 12, fontSize: 18, color: "#000", fontWeight: "600", textAlign: "center" }}>
+
+              <span
+                style={{
+                  marginTop: 12,
+                  fontSize: 18,
+                  color: "#000",
+                  fontWeight: "600",
+                  textAlign: "center"
+                }}
+              >
                 {cat.nome}
               </span>
             </div>
@@ -215,13 +261,13 @@ export default function TelaInicial() {
         />
       </div>
 
-      {/* Grid de lançamentos centralizado */}
+      {/* Grid de lançamentos */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(6, 242px)", // 6 produtos por linha
-          justifyContent: "space-around", // centraliza o grid
-          maxWidth: "1600px", // 242*6 + gaps aprox
+          gridTemplateColumns: "repeat(6, 242px)",
+          justifyContent: "space-around",
+          maxWidth: "1600px",
           padding: "0",
         }}
       >
@@ -247,7 +293,6 @@ export default function TelaInicial() {
                 boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
               }}
             >
-              {/* Imagem */}
               <img
                 src={produto.imagem_url}
                 alt={produto.titulo}
@@ -259,7 +304,6 @@ export default function TelaInicial() {
                 }}
               />
 
-              {/* Conteúdo do produto */}
               <div style={{ display: "flex", flexDirection: "column", gap: "5px", flexGrow: 1 }}>
                 <h3 style={{
                   fontSize: "16px",
@@ -294,7 +338,7 @@ export default function TelaInicial() {
               <button
                 onClick={() => router.push(`/produto/${produto.id}`)}
                 style={{
-                  width: "100%", 
+                  width: "100%",
                   marginTop: "5px",
                   padding: "10px",
                   backgroundColor: "#000",

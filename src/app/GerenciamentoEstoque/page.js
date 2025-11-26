@@ -1,7 +1,5 @@
 import Link from "next/link";
 import db from "@/lib/db";
-import Instagram from './instagram.js';
-import Whatsapp from './whatsapp.js';
 import seta from './imagem/seta.png';
 import Image from "next/image.js";
 
@@ -27,19 +25,26 @@ export default async function GerenciamentoEstoque() {
           paddingLeft: 20
         }}>
           <div style={{ gap: 20, display: "flex" }}>
-            <Instagram />
-            <Whatsapp />
           </div>
         </div>
 
-        <div style={{ marginRight: '94%', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Link href="/tela-inicial" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-            <Image src={seta} alt="Voltar" style={{ cursor: "pointer" }} />
-            <span style={{ fontSize: 20, fontFamily: 'Roboto, sans-serif', color: '#000', fontWeight: 'bold' }}>
-              VOLTAR
-            </span>
-          </Link>
-        </div>
+       <div style={{ marginRight: "94%", marginTop: "1", display: "flex", alignItems: "center", gap: 10 }}>
+  <Link href="/tela-inicial" style={{ display: "flex", alignItems: "center", textDecoration: "none", gap: 8 }}>
+      
+      <Image 
+          src={seta} 
+          alt="Voltar" 
+          width={24} 
+          height={24} 
+          style={{ marginRight: 5 }} 
+      />
+
+      <span style={{ fontSize: 20, fontFamily: "Roboto, sans-serif", color: "#000", fontWeight: "bold" }}>
+          VOLTAR
+      </span>
+
+  </Link>
+</div>
 
         <div style={{
           marginTop: 100,

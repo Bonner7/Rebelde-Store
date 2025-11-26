@@ -5,8 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 
-import Instagram from './instagram.js';
-import Whatsapp from './whatsapp.js';
+import seta from "./imagem/seta.png";
 
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
@@ -60,7 +59,7 @@ export default function EditarProduto() {
     const [descricao, setDescricao] = useState("");
 
     // Imagens
-    // imagemPrincipalUrl guarda a URL do DB ou a DataURL do novo File (preview)
+    // imagemPrincipalUrl guarda a URL do DB (http...) ou a DataURL do novo File (preview)
     const [imagemPrincipalUrl, setImagemPrincipalUrl] = useState(null); 
     // imagemPrincipalFile guarda o novo File para ser convertido e enviado
     const [imagemPrincipalFile, setImagemPrincipalFile] = useState(null); 
@@ -103,33 +102,48 @@ export default function EditarProduto() {
     // NOVO HELPER: Remove o prefixo do Data URL ou mantém se for URL pública (http/https).
     const limparBase64 = (dataUrlOrUrl) => {
         if (!dataUrlOrUrl) return null;
-        if (dataUrlOrUrl.startsWith('http')) return dataUrlOrUrl;
+        if (typeof dataUrlOrUrl === 'string' && dataUrlOrUrl.startsWith('http')) return dataUrlOrUrl;
         // Remove o prefixo (ex: "data:image/png;base64,") para enviar a Base64 pura
-        return dataUrlOrUrl.replace(/^data:image\/(?:[a-z]+);base64,/, "");
+        if (typeof dataUrlOrUrl === 'string') return dataUrlOrUrl.replace(/^data:image\/(?:[a-z]+);base64,/, "");
+        return null;
     };
 
+    // CORRIGIDO: usa DataURL (base64) tanto para preview quanto para envio
     const handleImagemPrincipal = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
+
         setImagemPrincipalFile(file);
-        // Exibir no preview como DataURL
-        setImagemPrincipalUrl(URL.createObjectURL(file)); 
+
+        // Agora o preview usa Base64 REAL
+        try {
+            const dataUrl = await converterBase64(file);
+            setImagemPrincipalUrl(dataUrl);
+        } catch (err) {
+            console.error('Erro ao converter imagem principal:', err);
+        }
     };
 
-    const handleImagemExtra = (index) => (async (e) => {
+    // CORRIGIDO: handleImagemExtra converte para base64 e atualiza tanto Files quanto URLs (DataURL)
+    const handleImagemExtra = (index) => async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
-        // Atualiza a lista de arquivos a serem enviados
-        const novosFiles = [...imagensExtrasFiles]; 
-        novosFiles[index] = file; 
-        setImagensExtrasFiles(novosFiles);
-        
-        // Atualiza a lista de URLs/DataURLs para preview
-        const novasUrls = [...imagensExtrasUrls];
-        novasUrls[index] = URL.createObjectURL(file);
-        setImagensExtrasUrls(novasUrls);
-    });
+        try {
+            // Atualiza a lista de arquivos a serem enviados
+            const novosFiles = [...imagensExtrasFiles]; 
+            novosFiles[index] = file; 
+            setImagensExtrasFiles(novosFiles);
+
+            // Converte para DataURL para preview e envio
+            const dataUrl = await converterBase64(file);
+            const novasUrls = [...imagensExtrasUrls];
+            novasUrls[index] = dataUrl;
+            setImagensExtrasUrls(novasUrls);
+        } catch (err) {
+            console.error('Erro ao converter imagem extra:', err);
+        }
+    };
 
     const removerImagemExtra = (index) => {
         // Remove o File do array de Files
@@ -241,6 +255,7 @@ export default function EditarProduto() {
                 
                 // Imagem Principal (URL do DB)
                 setImagemPrincipalUrl(data.imagem_url ?? null);
+                setImagemPrincipalFile(null); // não há novo file ainda
                 
                 // Imagens Extras (limita a 3)
                 if (data.imagens_extras && Array.isArray(data.imagens_extras)) {
@@ -252,7 +267,6 @@ export default function EditarProduto() {
                         loadedExtras[2] || null
                     ]);
                     // O array de Files permanece [null, null, null] até que o usuário troque uma imagem
-                    // Não há necessidade de preencher o imagensExtrasFiles, apenas as URLs
                 }
 
                 // Cores e Tamanhos (JSONB)
@@ -283,51 +297,45 @@ export default function EditarProduto() {
         // 1. Lógica para Imagem Principal: Base64 se for novo arquivo, URL se for imagem existente
         let imagemPrincipalPayload;
         if (imagemPrincipalFile) {
-            // Se o usuário selecionou um novo arquivo, converte para Base64 pura
+            // Se o usuário selecionou um novo arquivo, converte para DataURL e manda como DataURL (com prefixo)
             const dataUrl = await converterBase64(imagemPrincipalFile);
-            imagemPrincipalPayload = limparBase64(dataUrl); 
+            // Envia com prefixo (ex: data:image/png;base64,AAAA...)
+            imagemPrincipalPayload = dataUrl;
         } else {
-            // Se não alterou, envia a URL existente (ou null se não tiver imagem)
-            imagemPrincipalPayload = imagemPrincipalUrl; 
+            // Se não alterou, NÃO envie undefined — envie null para indicar que não mudou
+            // Porém o backend que você forneceu troca a imagem apenas se imagemBase64 !== undefined
+            // Para manter compatibilidade, vamos enviar undefined by omitting the field when não houve alteração.
+            imagemPrincipalPayload = undefined; 
         }
 
-        // 2. Lógica para Imagens Extras: 
+        // 2. Lógica para Imagens Extras (opcional): converte novas files e envia como array de DataURLs/URLs
         const imagensExtrasPayload = await Promise.all(imagensExtrasUrls.map(async (urlOrDataUrl, index) => {
             const file = imagensExtrasFiles[index];
             if (file) {
-                // Se o usuário selecionou um novo arquivo (tem file no estado), converte para Base64 pura
                 const dataUrl = await converterBase64(file);
-                return limparBase64(dataUrl);
-            } else if (urlOrDataUrl && urlOrDataUrl.startsWith('http')) {
-                // Se o link é uma URL do DB e o usuário NÃO alterou o File, envia a URL original
-                return urlOrDataUrl;
-            } else if (urlOrDataUrl && urlOrDataUrl.startsWith('data:')) {
-                // Caso extremo: Se for uma DataURL no estado, mas o File não foi populado (não deve acontecer com a lógica de cima), converte.
-                return limparBase64(urlOrDataUrl);
+                return dataUrl; // DataURL com prefixo
+            } else if (urlOrDataUrl && typeof urlOrDataUrl === 'string' && urlOrDataUrl.startsWith('http')) {
+                return urlOrDataUrl; // URL do DB
             }
-            return null; // Imagem removida ou nunca existiu
+            return null;
         }));
 
-        // Filtra nulos e vazios
         const imagensExtrasLimpa = imagensExtrasPayload.filter(Boolean);
 
-
+        // Monta payload respeitando o campo que o backend espera: imagemBase64
         const produtoAtualizado = {
             titulo,
-            // Converte a string 'valor' para float
-            valor: parseFloat(valor.replace(',', '.')) || 0,
-            // Converte o ID da categoria para inteiro (ou null se for "")
-            categoria_id: categoriaId ? parseInt(categoriaId) : null, 
-            // Converte a string 'estoque' para inteiro
+            valor: parseFloat(String(valor).replace(',', '.')) || 0,
+            categoria: nomeCategoria || undefined, // seu backend aceita nome de categoria (texto)
             estoque: parseInt(estoque) || 0,
-            
-            descricao,
-            // Nome alterado para refletir que pode ser Base64 OU a URL
-            imagem_principal_payload: imagemPrincipalPayload, 
-            imagens_extras_payload: imagensExtrasLimpa, // Nome alterado
-            cores: coresSelecionadas,
-            tamanhos: tamanhosSelecionados
+            descricao
+            // não colocamos imagemBase64 aqui se for undefined (ou seja, não alterou)
         };
+
+        // Só insere imagemBase64 no objeto se realmente houver alteração
+        if (imagemPrincipalPayload !== undefined) produtoAtualizado.imagemBase64 = imagemPrincipalPayload;
+        // Se quiser enviar as extras, inclua um campo auxiliar (o backend atual pode ignorar)
+        if (imagensExtrasLimpa.length) produtoAtualizado.imagens_extras = imagensExtrasLimpa;
 
         try {
             const response = await fetch(`/api/produtos/${id}`, {
@@ -369,15 +377,26 @@ export default function EditarProduto() {
             
             {/* Barra superior */}
             <div style={{ width: "100%", height: "84px", backgroundColor: "#FF4791", display: "flex", alignItems: "center", paddingLeft: "20px" }}>
-                <Instagram /><Whatsapp />
             </div>
 
             {/* Botão Voltar */}
             <div style={{ marginRight: "94%", marginTop: "1%", display: "flex", alignItems: "center", gap: 10 }}>
-                <Link href="/GerenciamentoEstoque" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-                    <span style={{ fontSize: 20, fontFamily: "Roboto, sans-serif", color: "#000", fontWeight: "bold" }}>VOLTAR</span>
-                </Link>
-            </div>
+    <Link href="/EditarProduto" style={{ display: "flex", alignItems: "center", textDecoration: "none", gap: 8 }}>
+        
+        <Image 
+            src={seta} 
+            alt="Voltar" 
+            width={24} 
+            height={24} 
+            style={{ marginRight: 5 }} 
+        />
+
+        <span style={{ fontSize: 20, fontFamily: "Roboto, sans-serif", color: "#000", fontWeight: "bold" }}>
+            VOLTAR
+        </span>
+
+    </Link>
+</div>
 
             {/* Título */}
             <div style={{ width: "758px", height: "80px", backgroundColor: "#E5D7E1", borderRadius: "74px", display: "flex", justifyContent: "center", alignItems: "center", fontFamily: "Lustria, serif", fontSize: "36px", marginTop: "40px" }}>
@@ -461,7 +480,7 @@ export default function EditarProduto() {
                             />
                             {abrirPopoverCores && (
                                 <div ref={refPopoverCores} style={{ position: "absolute", top: "45px", left: 0, width: "100%", backgroundColor: "#fff", border: "1px solid #000", borderRadius: "10px", padding: "8px", zIndex: 10, maxHeight: '300px', overflowY: 'auto' }}>
-                                    
+                                        
                                     {/* Cores Selecionadas */}
                                     {coresSelecionadas.length > 0 && (
                                         <div style={{ marginBottom: "10px", paddingBottom: "5px", borderBottom: '1px solid #eee' }}>
