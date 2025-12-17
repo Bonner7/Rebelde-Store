@@ -1,8 +1,7 @@
-// __tests__/AdicionarProduto.test.jsx
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import '@testing-library/jest-dom';
-import AdicionarProduto from "../src/app/AdicionarProduto/page"; // caminho correto
+import AdicionarProduto from "../src/app/AdicionarProduto/page"; 
 
 import { useRouter } from "next/navigation";
 jest.mock("next/navigation", () => ({
@@ -34,3 +33,5 @@ describe("AdicionarProduto", () => {
     expect(categoria).toBeInTheDocument();
   });
 });
+
+

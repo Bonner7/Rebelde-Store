@@ -80,83 +80,97 @@ export default function TelaInicial() {
         }}
       />
 
-      {/* Barra com logo e busca */}
-      <div
+     {/* Barra com logo e busca */}
+{/* Barra com logo e links */}
+<div
+  style={{
+    width: "100%",
+    height: "118px",
+    backgroundColor: "#FFD7D7",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "0 20px",
+  }}
+>
+  <div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+    <Image src={logo} width={211} height={215} alt="Logo da Loja" />
+
+    <div style={{ display: "flex", gap: "30px" }}>
+      <span
+        onClick={() => router.push("/GerenciamentoEstoque")}
         style={{
-          width: "100%",
-          height: "118px",
-          backgroundColor: "#FFD7D7",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 20px",
+          fontFamily: "Abhaya Libre, serif",
+          fontWeight: "400",
+          fontSize: "24px",
+          color: "black",
+          cursor: "pointer",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
-          <Image src={logo} width={211} height={215} alt="Logo da Loja" />
+        Gerenciamento
+      </span>
 
-          <div style={{ display: "flex", gap: "30px" }}>
-            <span
-              onClick={() => window.location.href = "/GerenciamentoEstoque"}
-              style={{
-                fontFamily: "Abhaya Libre, serif",
-                fontWeight: "400",
-                fontSize: "24px",
-                color: "black",
-                cursor: "pointer",
-              }}
-            >
-              Gerenciamento
-            </span>
+      <span
+        onClick={() => router.push("/GerenciamentoPedidos")}
+        style={{
+          fontFamily: "Abhaya Libre, serif",
+          fontWeight: "400",
+          fontSize: "24px",
+          color: "black",
+          cursor: "pointer",
+        }}
+      >
+        Pedidos
+      </span>
 
-            <span
-              onClick={() => alert("Página de pedidos ainda não implementada")}
-              style={{
-                fontFamily: "Abhaya Libre, serif",
-                fontWeight: "400",
-                fontSize: "24px",
-                color: "black",
-                cursor: "pointer",
-              }}
-            >
-              Pedidos
-            </span>
-          </div>
-        </div>
+      <span
+        onClick={() => router.push("/GerenciamentoClientes")}
+        style={{
+          fontFamily: "Abhaya Libre, serif",
+          fontWeight: "400",
+          fontSize: "24px",
+          color: "black",
+          cursor: "pointer",
+        }}
+      >
+        Usuário
+      </span>
+    </div>
+  </div>
 
-        <form method="post" style={{ position: "relative", display: "flex", alignItems: "center" }}>
-  
-  {/* Ícone da lupa */}
-  <Image 
-    src={lupa} 
-    alt="Buscar" 
-    width={22} 
-    height={22}
-    style={{
-      position: "absolute",
-      left: 15,
-      top: "50%",
-      transform: "translateY(-50%)"
-    }}
-  />
+  {/* Formulário de busca */}
+  <form
+    method="post"
+    style={{ position: "relative", display: "flex", alignItems: "center" }}
+  >
+    <Image
+      src={lupa}
+      alt="Buscar"
+      width={22}
+      height={22}
+      style={{
+        position: "absolute",
+        left: 15,
+        top: "50%",
+        transform: "translateY(-50%)",
+      }}
+    />
 
-  {/* Input de busca */}
-  <input
-    type="text"
-    placeholder="Pesquisar..."
-    value={busca}
-    onChange={e => setBusca(e.target.value)}
-    style={{
-      padding: "10px 10px 10px 45px",  // espaço para a lupa
-      fontSize: "16px",
-      borderRadius: "70px",
-      border: "1px solid #ccc",
-      width: "517px"
-    }}
-  />
-
-</form>
-      </div>
+    <input
+      type="text"
+      placeholder="Pesquisar..."
+      value={busca}
+      onChange={(e) => setBusca(e.target.value)}
+      style={{
+        padding: "10px 10px 10px 45px",
+        fontSize: "16px",
+        borderRadius: "70px",
+        border: "1px solid #ccc",
+        width: "517px",
+      }}
+    />
+  </form>
+</div>
 
       {/* Grid de categorias */}
       <div
